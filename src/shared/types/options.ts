@@ -1,0 +1,9 @@
+export type Exchange = 'NSE' | 'BSE';
+export type MarketSegment = 'NSE' | 'NFO' | 'BSE' | 'BSE_CM' | 'BFO';
+export type OptionType = 'CE' | 'PE';
+export type LegSide = 'BUY' | 'SELL';
+export type GapMode = 'STRIKE_STEPS' | 'PRICE_GAP';
+export type ReferenceStrikeMode = 'ATM' | 'ATM_OFFSET' | 'CUSTOM';
+export type DirectionMode = 'NORMAL' | 'REVERSE';
+export type OiReferenceMode = 'PREV_TICK' | 'ONE_MIN' | 'FIVE_MIN' | 'MARKET_OPEN' | 'PREV_CLOSE';
+export type FeedStatus = 'LIVE' | 'STALE' | 'DISCONNECTED' | 'RECONNECTING';

@@ -1,0 +1,540 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-feature-settings: 'tnum' 1, 'cv05' 1, 'cv11' 1;
+    letter-spacing: -0.011em;
+  }
+
+  code, kbd, samp, pre, .font-mono, td.num-cell, span.num-val {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Ant Design Ultra-Slim Scrollbar System (4px width/height) */
+::-webkit-scrollbar,
+*::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28) !important;
+  border-radius: 9999px !important;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5) !important;
+}
+
+::-webkit-scrollbar-thumb:active,
+*::-webkit-scrollbar-thumb:active {
+  background: rgba(100, 116, 139, 0.7) !important;
+}
+
+.dark ::-webkit-scrollbar-thumb,
+.dark *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-radius: 9999px !important;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover,
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.42) !important;
+}
+
+.dark ::-webkit-scrollbar-thumb:active,
+.dark *::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.6) !important;
+}
+
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* Firefox Slim Scrollbar */
+@supports (-moz-appearance: none) {
+  * {
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(100, 116, 139, 0.3) transparent !important;
+  }
+  .dark, .dark * {
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent !important;
+  }
+}
+
+/* Ant Design Virtual List (Select/TreeSelect/AutoComplete/Cascader) Slim Scrollbar */
+.rc-virtual-list-scrollbar,
+.rc-virtual-list-scrollbar-show,
+.rc-virtual-list-scrollbar-vertical,
+.ant-select-dropdown .rc-virtual-list-scrollbar,
+.ant-tree-select-dropdown .rc-virtual-list-scrollbar,
+.ant-auto-complete-dropdown .rc-virtual-list-scrollbar,
+div.rc-virtual-list-scrollbar,
+div[class*="rc-virtual-list-scrollbar"] {
+  width: 4px !important;
+  min-width: 4px !important;
+  max-width: 4px !important;
+  right: 2px !important;
+  border-radius: 9999px !important;
+  background: transparent !important;
+  opacity: 1 !important;
+}
+
+.rc-virtual-list-scrollbar-thumb,
+.rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb,
+.ant-select-dropdown .rc-virtual-list-scrollbar-thumb,
+.ant-tree-select-dropdown .rc-virtual-list-scrollbar-thumb,
+div.rc-virtual-list-scrollbar-thumb,
+div[class*="rc-virtual-list-scrollbar-thumb"] {
+  width: 4px !important;
+  min-width: 4px !important;
+  max-width: 4px !important;
+  background: rgba(100, 116, 139, 0.35) !important;
+  background-color: rgba(100, 116, 139, 0.35) !important;
+  border-radius: 9999px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.rc-virtual-list-scrollbar:hover .rc-virtual-list-scrollbar-thumb,
+.rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb:hover,
+.ant-select-dropdown .rc-virtual-list-scrollbar:hover .rc-virtual-list-scrollbar-thumb,
+.ant-select-dropdown .rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb:hover,
+div.rc-virtual-list-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55) !important;
+  background-color: rgba(100, 116, 139, 0.55) !important;
+}
+
+.dark .rc-virtual-list-scrollbar,
+.dark .ant-select-dropdown .rc-virtual-list-scrollbar,
+.dark div.rc-virtual-list-scrollbar {
+  background: transparent !important;
+}
+
+.dark .rc-virtual-list-scrollbar-thumb,
+.dark .rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb,
+.dark .ant-select-dropdown .rc-virtual-list-scrollbar-thumb,
+.dark .ant-select-dropdown .rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb,
+.dark div.rc-virtual-list-scrollbar-thumb,
+.dark div[class*="rc-virtual-list-scrollbar-thumb"] {
+  background: rgba(255, 255, 255, 0.25) !important;
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  border-radius: 9999px !important;
+}
+
+.dark .rc-virtual-list-scrollbar:hover .rc-virtual-list-scrollbar-thumb,
+.dark .rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb:hover,
+.dark .ant-select-dropdown .rc-virtual-list-scrollbar:hover .rc-virtual-list-scrollbar-thumb,
+.dark .ant-select-dropdown .rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb:hover,
+.dark div.rc-virtual-list-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.48) !important;
+  background-color: rgba(255, 255, 255, 0.48) !important;
+}
+
+/* Explicit Table & Dropdown Slim Scrollbar Helper Class */
+.slim-scrollbar,
+.ant-table-body,
+.ant-table-content,
+.ant-select-dropdown .rc-virtual-list-holder,
+.ant-dropdown-menu,
+.ant-picker-dropdown {
+  overflow-y: auto;
+}
+
+.slim-scrollbar::-webkit-scrollbar,
+.ant-table-body::-webkit-scrollbar,
+.ant-table-content::-webkit-scrollbar,
+.ant-select-dropdown::-webkit-scrollbar,
+.ant-select-dropdown .rc-virtual-list-holder::-webkit-scrollbar,
+.ant-dropdown-menu::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+.slim-scrollbar::-webkit-scrollbar-thumb,
+.ant-table-body::-webkit-scrollbar-thumb,
+.ant-table-content::-webkit-scrollbar-thumb,
+.ant-select-dropdown::-webkit-scrollbar-thumb,
+.ant-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28) !important;
+  border-radius: 9999px !important;
+}
+
+.dark .slim-scrollbar::-webkit-scrollbar-thumb,
+.dark .ant-table-body::-webkit-scrollbar-thumb,
+.dark .ant-table-content::-webkit-scrollbar-thumb,
+.dark .ant-select-dropdown::-webkit-scrollbar-thumb,
+.dark .ant-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Utility to completely hide scrollbar while preserving scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes flash-green {
+  0% { background-color: rgba(16, 185, 129, 0.35); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-red {
+  0% { background-color: rgba(244, 63, 94, 0.35); }
+  100% { background-color: transparent; }
+}
+
+.tick-up {
+  animation: flash-green 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tick-down {
+  animation: flash-red 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ant Design Pro Layout Refinements & 100% Solid Non-Transparent Header */
+.antd-pro-terminal-wrapper .ant-pro-layout-header,
+.antd-pro-terminal-wrapper .ant-pro-layout-header-fixed-header,
+.antd-pro-terminal-wrapper .ant-pro-layout-header-fixed-header-scroll,
+.antd-pro-terminal-wrapper header.ant-layout-header,
+.antd-pro-terminal-wrapper .ant-layout-header,
+.antd-pro-terminal-wrapper .ant-pro-top-nav-header,
+.antd-pro-terminal-wrapper .ant-pro-top-nav-header-main,
+.antd-pro-terminal-wrapper .ant-pro-global-header,
+.ant-pro-layout-header,
+.ant-pro-top-nav-header {
+  height: auto !important;
+  min-height: 56px !important;
+  line-height: normal !important;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+  z-index: 100 !important;
+}
+
+.antd-pro-terminal-wrapper .ant-menu.ant-pro-top-nav-header-menu,
+.antd-pro-terminal-wrapper .ant-menu-horizontal {
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
+.antd-pro-terminal-wrapper .ant-pro-page-header,
+.antd-pro-terminal-wrapper .ant-page-header,
+.antd-pro-terminal-wrapper .ant-pro-page-container-warp {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Dark Mode 100% Solid Non-Transparent Header */
+.dark .antd-pro-terminal-wrapper .ant-pro-layout-header,
+.dark .antd-pro-terminal-wrapper .ant-pro-layout-header-fixed-header,
+.dark .antd-pro-terminal-wrapper .ant-pro-layout-header-fixed-header-scroll,
+.dark .antd-pro-terminal-wrapper header.ant-layout-header,
+.dark .antd-pro-terminal-wrapper .ant-layout-header,
+.dark .antd-pro-terminal-wrapper .ant-pro-top-nav-header,
+.dark .antd-pro-terminal-wrapper .ant-pro-top-nav-header-main,
+.dark .antd-pro-terminal-wrapper .ant-pro-global-header,
+.dark .ant-pro-layout-header,
+.dark .ant-pro-top-nav-header {
+  height: auto !important;
+  min-height: 56px !important;
+  line-height: normal !important;
+  background-color: #0e1422 !important;
+  background: #0e1422 !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid #1e293b !important;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.3) !important;
+  z-index: 100 !important;
+}
+
+.dark .antd-pro-terminal-wrapper .ant-menu.ant-pro-top-nav-header-menu,
+.dark .antd-pro-terminal-wrapper .ant-menu-horizontal {
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
+.dark .antd-pro-terminal-wrapper .ant-pro-page-header,
+.dark .antd-pro-terminal-wrapper .ant-page-header,
+.dark .antd-pro-terminal-wrapper .ant-pro-page-container-warp {
+  background-color: #0e1422 !important;
+  background: #0e1422 !important;
+  border-bottom: 1px solid #1e293b !important;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.antd-pro-terminal-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.antd-pro-terminal-wrapper .ant-pro-page-container {
+  padding-top: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.antd-pro-terminal-wrapper .ant-pro-page-container-children-container {
+  padding-top: 12px !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-inline: 16px !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 1024px) {
+  .antd-pro-terminal-wrapper .ant-pro-page-container-children-container {
+    padding-inline: 10px !important;
+    padding-top: 8px !important;
+  }
+  .antd-pro-terminal-wrapper .ant-pro-top-nav-header-main {
+    padding-inline: 10px !important;
+  }
+}
+
+/* Eliminate 1152px max-width capping from ProLayout Grid & Header containers */
+.antd-pro-terminal-wrapper .ant-pro-grid-content,
+.antd-pro-terminal-wrapper .ant-pro-grid-content-wide,
+.antd-pro-terminal-wrapper .ant-pro-top-nav-header-wide,
+.antd-pro-terminal-wrapper .ant-pro-top-nav-header-main,
+.antd-pro-terminal-wrapper .ant-pro-page-container-warp,
+.antd-pro-terminal-wrapper .ant-pro-basicLayout,
+.antd-pro-terminal-wrapper .ant-pro-basicLayout-content,
+.antd-pro-terminal-wrapper .ant-layout,
+.antd-pro-terminal-wrapper .ant-layout-content,
+.antd-pro-terminal-wrapper .pro-terminal-content {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.antd-pro-terminal-wrapper .ant-pro-top-nav-header-main {
+  height: auto !important;
+  min-height: 56px !important;
+  padding-inline: 16px !important;
+  padding-block: 6px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+.antd-pro-terminal-wrapper .ant-pro-top-nav-header-main-left {
+  display: none !important;
+}
+
+.antd-pro-terminal-wrapper .ant-pro-top-nav-header-main > div:last-child {
+  width: 100% !important;
+  flex: 1 1 100% !important;
+}
+
+/* Light Theme Component Borders & Surfaces */
+:root:not(.dark) .ant-pro-card,
+:root:not(.dark) .ant-pro-card-body,
+:root:not(.dark) .ant-pro-card.ant-pro-card-border,
+:root:not(.dark) .ant-card,
+:root:not(.dark) .ant-card-body,
+:root:not(.dark) .ant-card-bordered,
+:root:not(.dark) .ant-pro-card-border {
+  border-color: #e2e8f0 !important;
+  background-color: #ffffff !important;
+}
+
+:root:not(.dark) .ant-segmented {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 2px !important;
+}
+
+:root:not(.dark) .ant-segmented-item-selected {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+/* Dark Theme Component Borders & Surfaces */
+.dark .ant-pro-card,
+.dark .ant-pro-card-body,
+.dark .ant-pro-card.ant-pro-card-border,
+.dark .ant-card,
+.dark .ant-card-body,
+.dark .ant-card-bordered,
+.dark .ant-pro-card-border {
+  border-color: #1e293b !important;
+  background-color: #121826 !important;
+}
+
+.dark .ant-segmented {
+  background-color: #0b0f19 !important;
+  border: 1px solid #1e293b !important;
+  padding: 2px !important;
+}
+
+.dark .ant-segmented-item-selected {
+  background-color: #1a2234 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+  color: #f9fafb !important;
+}
+
+/* Precision optical centering and alignment for Segmented control to match standard 32px controls */
+.ant-segmented {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  border-radius: 10px !important;
+  padding: 2px !important;
+}
+
+.ant-segmented .ant-segmented-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+
+.ant-segmented .ant-segmented-item {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: unset !important;
+}
+
+.ant-segmented .ant-segmented-item-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  padding: 0 14px !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.ant-segmented .ant-segmented-item-icon {
+  margin-inline-end: 0 !important;
+  margin-right: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ant-segmented .ant-segmented-thumb {
+  top: 2px !important;
+  bottom: 2px !important;
+  height: calc(100% - 4px) !important;
+  border-radius: 8px !important;
+}
+
+/* Ant Design Header Navigation Tabs */
+.header-nav-tabs {
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.header-nav-tabs .ant-tabs-nav {
+  margin: 0 !important;
+}
+
+.header-nav-tabs .ant-tabs-nav::before {
+  border-bottom: none !important;
+}
+
+.header-nav-tabs .ant-tabs-tab {
+  padding: 16px 14px !important;
+  margin: 0 2px !important;
+  font-size: 13.5px !important;
+  color: #475569 !important;
+  transition: all 0.2s ease !important;
+}
+
+.header-nav-tabs .ant-tabs-tab:hover {
+  color: #1677ff !important;
+}
+
+.header-nav-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #1677ff !important;
+  font-weight: 600 !important;
+}
+
+.header-nav-tabs .ant-tabs-ink-bar {
+  background: #1677ff !important;
+  height: 2.5px !important;
+  border-radius: 2px !important;
+}
+
+.dark .header-nav-tabs .ant-tabs-tab {
+  color: #94a3b8 !important;
+}
+
+.dark .header-nav-tabs .ant-tabs-tab:hover {
+  color: #3b82f6 !important;
+}
+
+.dark .header-nav-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #3b82f6 !important;
+  font-weight: 600 !important;
+}
+
+.dark .header-nav-tabs .ant-tabs-ink-bar {
+  background: #3b82f6 !important;
+}
+
+/* High-Performance Table Virtualization & Layout Optimization */
+tbody tr {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 42px;
+}
+
+table {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+

@@ -1,0 +1,75 @@
+:root, .light {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Ant Design Semantic Typography Variables */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  --font-size-display: 28px;
+  --font-size-title: 18px;
+  --font-size-heading: 15px;
+  --font-size-body: 13px;
+  --font-size-secondary: 12px;
+  --font-size-caption: 11px;
+  
+  --line-height-display: 1.25;
+  --line-height-title: 1.33;
+  --line-height-heading: 1.38;
+  --line-height-body: 1.4;
+  --line-height-secondary: 1.33;
+  --line-height-caption: 1.28;
+
+  /* System & Product Semantic Color Tokens (Light Mode - Ant Design Palette) */
+  --color-bg-canvas: #f8fafc;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-bg-overlay: #f1f5f9;
+  
+  --color-border-subtle: #f1f5f9;
+  --color-border-default: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-disabled: #94a3b8;
+  
+  --color-brand-primary: #2f54eb; /* Ant Geekblue-6 */
+  --color-brand-hover: #597ef7;   /* Ant Geekblue-5 */
+  --color-brand-active: #1d39c4;  /* Ant Geekblue-7 */
+  
+  --color-success: #52c41a;       /* Ant Green-6 */
+  --color-danger: #ff4d4f;        /* Ant Red-5 */
+  --color-warning: #faad14;       /* Ant Gold-6 */
+  --color-info: #1677ff;          /* Ant Blue-6 */
+}
+
+.dark {
+  /* System & Product Semantic Color Tokens (Dark Mode - Ant Design Dark Palette) */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-bg-canvas: #0b0f19;
+  --color-bg-surface: #121826;
+  --color-bg-elevated: #1a2234;
+  --color-bg-overlay: #2d374d;
+  
+  --color-border-subtle: #1a2234;
+  --color-border-default: #2d374d;
+  --color-border-strong: #475569;
+  
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-text-disabled: #4b5563;
+  
+  --color-brand-primary: #3c89e8; /* Ant Geekblue Dark Primary */
+  --color-brand-hover: #65b7f3;
+  --color-brand-active: #177ddc;
+  
+  --color-success: #49aa19;       /* Ant Green Dark */
+  --color-danger: #dc4446;        /* Ant Red Dark */
+  --color-warning: #d89614;       /* Ant Gold Dark */
+  --color-info: #177ddc;          /* Ant Blue Dark */
+}
+
