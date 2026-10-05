@@ -571,7 +571,7 @@ function requireAdmin(req, res, next) {
 var marketRouter = Router2();
 marketRouter.get("/status", marketController.getStatus);
 marketRouter.post("/login", requireAuth, requireAdmin, marketController.loginBroker);
-marketRouter.post("/quote", requireAuth, marketController.getQuotes);
+marketRouter.post("/quote", marketController.getQuotes);
 
 // server/modules/strategies/strategy.routes.ts
 import { Router as Router3 } from "express";
@@ -814,9 +814,8 @@ apiRouter.use("/angel", marketRouter);
 apiRouter.use("/user", strategyRouter);
 apiRouter.use("/admin", adminRouter);
 app.use("/api", apiRouter);
-
-// api/index.ts
-var index_default = app;
+var app_default = app;
 export {
-  index_default as default
+  app,
+  app_default as default
 };

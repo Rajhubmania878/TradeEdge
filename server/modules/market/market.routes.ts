@@ -7,6 +7,6 @@ export const marketRouter = Router();
 
 marketRouter.get('/status', marketController.getStatus);
 marketRouter.post('/login', requireAuth, requireAdmin, marketController.loginBroker);
-marketRouter.post('/quote', requireAuth, marketController.getQuotes);
+marketRouter.post('/quote', marketController.getQuotes);
 
 export default marketRouter;

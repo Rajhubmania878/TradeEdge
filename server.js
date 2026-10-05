@@ -576,7 +576,7 @@ function requireAdmin(req, res, next) {
 var marketRouter = Router2();
 marketRouter.get("/status", marketController.getStatus);
 marketRouter.post("/login", requireAuth, requireAdmin, marketController.loginBroker);
-marketRouter.post("/quote", requireAuth, marketController.getQuotes);
+marketRouter.post("/quote", marketController.getQuotes);
 
 // server/modules/strategies/strategy.routes.ts
 import { Router as Router3 } from "express";
