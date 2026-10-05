@@ -78,15 +78,15 @@ export const MatrixStrikeRow: React.FC<MatrixStrikeRowProps> = React.memo(({
       <td className={`sticky left-[104px] z-10 ${cellPy} px-3.5 text-right font-mono text-xs tabular-nums border-r-2 border-slate-300 dark:border-slate-700 transition-colors whitespace-nowrap min-w-[92px] shadow-[4px_0_8px_-2px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.6)] ${
         isAtm
           ? 'bg-amber-500/15 dark:bg-amber-500/25 text-amber-950 dark:text-amber-200 font-bold'
-          : 'bg-white/95 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 group-hover:bg-blue-100/30 dark:group-hover:bg-slate-800'
+          : 'bg-slate-50/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 group-hover:bg-blue-100/50 dark:group-hover:bg-slate-800'
       }`}>
         {ltp !== null ? `₹${ltp.toFixed(2)}` : '-'}
       </td>
 
-      {/* GAP CELLS */}
+      {/* MATRIX GAP STRATEGY CELLS */}
       {cells.map((cell, idx) => (
         <MatrixCellRenderer
-          key={cell.targetGap}
+          key={`${strike}-${cell.targetGap}`}
           cell={cell}
           idx={idx}
           selectedStrategyId={selectedStrategyId}
@@ -98,4 +98,37 @@ export const MatrixStrikeRow: React.FC<MatrixStrikeRowProps> = React.memo(({
       ))}
     </tr>
   );
+}, (prev, next) => {
+  // Ultra-fast custom memo comparator for selective 60 FPS row updates
+  if (prev.showAdvancedData !== next.showAdvancedData) return false;
+  if (prev.cellPy !== next.cellPy || prev.cellPx !== next.cellPx) return false;
+  if (prev.row.strike !== next.row.strike) return false;
+  if (prev.row.ltp !== next.row.ltp) return false;
+  if (prev.row.isAtm !== next.row.isAtm || prev.row.isItm !== next.row.isItm) return false;
+
+  // Selection toggle state check for this specific row
+  const prevHasSelected = prev.selectedStrategyId && prev.row.cells.some(c => c.strategyRow?.id === prev.selectedStrategyId);
+  const nextHasSelected = next.selectedStrategyId && next.row.cells.some(c => c.strategyRow?.id === next.selectedStrategyId);
+  if (prevHasSelected !== nextHasSelected) return false;
+
+  // Compare cell quote data
+  if (prev.row.cells.length !== next.row.cells.length) return false;
+  for (let i = 0; i < prev.row.cells.length; i++) {
+    const p = prev.row.cells[i];
+    const n = next.row.cells[i];
+    if (p.netEntryBuy !== n.netEntryBuy || p.sellBid !== n.sellBid || p.buyAsk !== n.buyAsk) return false;
+    if (prev.showAdvancedData) {
+      if (
+        p.buyContract?.iv !== n.buyContract?.iv ||
+        p.buyContract?.oi !== n.buyContract?.oi ||
+        p.buyContract?.volume !== n.buyContract?.volume
+      ) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 });
+
+export default MatrixStrikeRow;

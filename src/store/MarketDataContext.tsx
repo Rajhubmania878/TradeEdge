@@ -33,9 +33,10 @@ export const MarketDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     ticksPerSecond: 6
   }));
 
-  // Batched tick references to prevent unthrottled context flooding
+  // Batched tick references using RAF micro-batching to prevent unthrottled context flooding
   const pendingContractsRef = useRef<Map<string, OptionContract> | null>(null);
   const rafIdRef = useRef<number | null>(null);
+  const lastMetricsUpdateRef = useRef<number>(0);
 
   // Automatically initialize stock contracts and bind subscriptions when terminal parameters change
   useEffect(() => {
@@ -58,7 +59,12 @@ export const MarketDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
 
     const unsubMetrics = marketDataFeed.subscribeMetrics((newMetrics) => {
-      setMetrics(newMetrics);
+      const now = Date.now();
+      // Only trigger React state update if status changed or at least 2000ms elapsed
+      if (now - lastMetricsUpdateRef.current >= 2000) {
+        lastMetricsUpdateRef.current = now;
+        setMetrics(newMetrics);
+      }
     });
 
     const unsubSpotFut = marketDataFeed.subscribeSpotFut((newSpot, newFut) => {
@@ -108,4 +114,3 @@ export const useMarketData = () => {
   }
   return context;
 };
-

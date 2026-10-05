@@ -416,8 +416,8 @@ export const TerminalLayout: React.FC<TerminalLayoutProps> = ({
             heightLayoutHeader: 'auto' as any
           },
           pageContainer: {
-            paddingInlinePageContainerContent: 12,
-            paddingBlockPageContainerContent: 12,
+            paddingInlinePageContainerContent: 0,
+            paddingBlockPageContainerContent: 0,
             colorBgPageContainer: isDark ? '#0b0f19' : '#f8fafc'
           }
         }}
@@ -437,8 +437,8 @@ export const TerminalLayout: React.FC<TerminalLayoutProps> = ({
             pageHeaderRender={false}
             className="p-0"
           >
-            {/* Direct Market Workspace - Zero Duplicates */}
-            <div className="pro-terminal-content space-y-3 sm:space-y-4 pt-3 sm:pt-4 px-3 sm:px-6">
+            {/* Direct Market Workspace - Harmonized Unified Spacing */}
+            <div className="pro-terminal-content max-w-[1920px] mx-auto w-full flex flex-col gap-3 sm:gap-3.5 px-3 sm:px-4 md:px-6 py-2.5 sm:py-3.5">
               {snapshotStrip}
               {children}
             </div>

@@ -173,7 +173,7 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-5 mb-4 space-y-3 sm:space-y-4 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 space-y-3 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
       {/* 1. TOP ROW: RATIO QUICK BUTTONS & RESET/SAVE PRESET */}
       <Flex align="center" justify="space-between" wrap="wrap" gap={10}>
         {/* Left: Ratio Buttons */}

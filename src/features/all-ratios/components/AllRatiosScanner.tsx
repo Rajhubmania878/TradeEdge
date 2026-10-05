@@ -1,16 +1,21 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  OptionContract,
   UnderlyingStock,
   OptionType,
+  OptionContract,
   RatioStrategyRow,
   Exchange
 } from '@/shared/types';
 import { resolveTokenForExchange } from '@/data/universeManager';
 import { evaluateStrategyPayoff } from '@/engine/payoffEngine';
-import { AppstoreOutlined } from '@ant-design/icons';
-import { Table, Button, Tag, Tooltip, Empty, Typography } from 'antd';
+import { Table, Tag, Tooltip, Empty, Typography, Space } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import {
+  RiseOutlined,
+  FallOutlined,
+  EyeOutlined,
+  AppstoreOutlined
+} from '@ant-design/icons';
 
 const { Text } = Typography;
 
@@ -25,6 +30,16 @@ interface AllRatiosScannerProps {
   exchange?: Exchange;
 }
 
+const COMMON_RATIOS = [
+  { long: 1, short: 1, label: '1:1' },
+  { long: 1, short: 2, label: '1:2' },
+  { long: 1, short: 3, label: '1:3' },
+  { long: 1, short: 4, label: '1:4' },
+  { long: 2, short: 3, label: '2:3' },
+  { long: 2, short: 5, label: '2:5' },
+  { long: 3, short: 5, label: '3:5' }
+];
+
 export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
   stock,
   expiry,
@@ -35,80 +50,65 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
   onSelectStrategy,
   exchange = 'NSE'
 }) => {
-  const comparisonRatios = [
-    { long: 1, short: 1, label: '1:1' },
-    { long: 1, short: 2, label: '1:2' },
-    { long: 1, short: 3, label: '1:3' },
-    { long: 1, short: 4, label: '1:4' },
-    { long: 2, short: 3, label: '2:3' },
-    { long: 2, short: 5, label: '2:5' },
-    { long: 3, short: 5, label: '3:5' }
-  ];
+  const actualStep = stock.strikeStep;
 
-  const atmStrike = useMemo(() => {
-    let closest = allStrikes[0] || currentSpot;
-    let minDiff = Math.abs(currentSpot - closest);
-    for (const s of allStrikes) {
-      const diff = Math.abs(currentSpot - s);
+  // Find ATM strike index
+  const atmIdx = useMemo(() => {
+    if (allStrikes.length === 0) return -1;
+    let closestIdx = 0;
+    let minDiff = Math.abs(currentSpot - allStrikes[0]);
+    for (let i = 1; i < allStrikes.length; i++) {
+      const diff = Math.abs(currentSpot - allStrikes[i]);
       if (diff < minDiff) {
         minDiff = diff;
-        closest = s;
+        closestIdx = i;
       }
     }
-    return closest;
+    return closestIdx;
   }, [allStrikes, currentSpot]);
 
-  const atmIdx = allStrikes.indexOf(atmStrike);
-  const sampleIndices = [
-    Math.max(0, atmIdx - 1),
-    atmIdx,
-    Math.min(allStrikes.length - 1, atmIdx + 1),
-    Math.min(allStrikes.length - 1, atmIdx + 2)
-  ].filter((v, i, a) => a.indexOf(v) === i);
-
-  const gapStepsList = [1, 2, 3];
-
-  // Fast O(1) Strike-Indexed Contract Lookup Map (RULE 6.5)
-  const strikeMap = useMemo(() => {
-    const map = new Map<string, OptionContract>();
-    for (const c of contracts.values()) {
-      map.set(`${c.strike}_${c.optionType}`, c);
+  // Selected sample strikes around ATM (-4 to +6)
+  const sampleIndices = useMemo(() => {
+    if (atmIdx === -1) return [];
+    const minI = Math.max(0, atmIdx - 4);
+    const maxI = Math.min(allStrikes.length - 1, atmIdx + 6);
+    const indices: number[] = [];
+    for (let i = minI; i <= maxI; i++) {
+      indices.push(i);
     }
-    return map;
-  }, [contracts]);
+    return indices;
+  }, [atmIdx, allStrikes.length]);
 
+  // Generate All Ratio strategy combinations across sample strikes and target gaps
   const generatedRows = useMemo(() => {
     const list: RatioStrategyRow[] = [];
+    const gapMultipliers = [1, 2, 3, 4];
 
-    for (const r of comparisonRatios) {
-      for (const buyIdx of sampleIndices) {
-        for (const gSteps of gapStepsList) {
-          const sellIdx = optionType === 'CE' ? buyIdx + gSteps : buyIdx - gSteps;
-          if (sellIdx < 0 || sellIdx >= allStrikes.length) continue;
+    for (const r of COMMON_RATIOS) {
+      for (const i of sampleIndices) {
+        const buyStrike = allStrikes[i];
+        const buyToken = resolveTokenForExchange(stock.symbol, expiry, buyStrike, optionType, exchange);
+        const buyContract = contracts.get(buyToken);
+        if (!buyContract) continue;
 
-          const buyStrike = allStrikes[buyIdx];
-          const sellStrike = allStrikes[sellIdx];
+        for (const gSteps of gapMultipliers) {
+          const targetSellIdx = optionType === 'CE' ? i + gSteps : i - gSteps;
+          if (targetSellIdx < 0 || targetSellIdx >= allStrikes.length) continue;
+
+          const sellStrike = allStrikes[targetSellIdx];
           const actualGap = Math.abs(sellStrike - buyStrike);
-
-          const buyToken = resolveTokenForExchange(stock.symbol, expiry, buyStrike, optionType, exchange);
           const sellToken = resolveTokenForExchange(stock.symbol, expiry, sellStrike, optionType, exchange);
+          const sellContract = contracts.get(sellToken);
+          if (!sellContract) continue;
 
-          const buyContract = contracts.get(buyToken) || strikeMap.get(`${buyStrike}_${optionType}`);
-          const sellContract = contracts.get(sellToken) || strikeMap.get(`${sellStrike}_${optionType}`);
-
-          if (!buyContract || !sellContract) continue;
-
-          const buyAsk = buyContract.ask ?? (buyContract.ltp ? Math.round((buyContract.ltp + 0.1) * 20) / 20 : null);
-          const buyBid = buyContract.bid ?? (buyContract.ltp ? Math.max(0.05, Math.round((buyContract.ltp - 0.1) * 20) / 20) : null);
-          const sellBid = (sellContract.bid !== null && sellContract.bid !== undefined && sellContract.bid > 0)
-            ? sellContract.bid
-            : (sellContract.ltp ? Math.max(0.05, Math.round((sellContract.ltp - 0.1) * 20) / 20) : null);
-          const sellAsk = (sellContract.ask !== null && sellContract.ask !== undefined && sellContract.ask > 0)
-            ? sellContract.ask
-            : (sellContract.ltp ? Math.round((sellContract.ltp + 0.1) * 20) / 20 : null);
+          const buyAsk = buyContract.ask ?? buyContract.ltp ?? null;
+          const buyBid = buyContract.bid ?? buyContract.ltp ?? null;
+          const sellBid = sellContract.bid ?? sellContract.ltp ?? null;
+          const sellAsk = sellContract.ask ?? sellContract.ltp ?? null;
 
           if (buyAsk === null || sellBid === null) continue;
 
+          // Executable Net Entry = (LongQty × BuyAsk) - (ShortQty × SellBid)
           const netEntry = Math.round((r.long * buyAsk - r.short * sellBid) * 100) / 100;
           const totalEntry = Math.round(netEntry * stock.lotSize * 100) / 100;
 
@@ -133,10 +133,9 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
             }
           ];
 
-          // O(1) Analytical Peak Calculations for 2-leg Ratio Spreads
-          const strikeDiff = Math.abs(sellStrike - buyStrike);
-          const peakProfitPerShare = r.long * strikeDiff - netEntry;
-          const maxProfitPerShare = Math.round(peakProfitPerShare * 100) / 100;
+          // Analytical Ratio Spread Math for Instant 60 FPS Table Updates
+          const peakProfitPerShare = Math.round((r.long * actualGap - netEntry) * 100) / 100;
+          const maxProfitPerShare = peakProfitPerShare;
           const maxProfitPerLot = Math.round(peakProfitPerShare * stock.lotSize * 100) / 100;
 
           const isCall = optionType === 'CE';
@@ -146,7 +145,6 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
           let maxLossPerLot: number | 'Unlimited' = isUnlimitedLoss ? 'Unlimited' : 0;
 
           if (!isUnlimitedLoss) {
-            // For puts or 1:1, calculate max loss at S = 0 or bounds
             const lossAtZero = !isCall ? (r.long * buyStrike - r.short * sellStrike) - netEntry : -netEntry;
             maxLossPerShare = Math.round(Math.min(lossAtZero, -netEntry) * 100) / 100;
             maxLossPerLot = Math.round(Number(maxLossPerShare) * stock.lotSize * 100) / 100;
@@ -154,12 +152,10 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
 
           const breakevens: number[] = [];
           if (netEntry > 0) {
-            // Lower/entry breakeven when debit paid
             const beEntry = isCall ? buyStrike + netEntry / r.long : buyStrike - netEntry / r.long;
             breakevens.push(Math.round(beEntry * 10) / 10);
           }
           if (r.short > r.long && peakProfitPerShare > 0) {
-            // Upper/breakout breakeven
             const beUpper = isCall
               ? sellStrike + peakProfitPerShare / (r.short - r.long)
               : sellStrike - peakProfitPerShare / (r.short - r.long);
@@ -250,9 +246,9 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       dataIndex: 'ratioStr',
       key: 'ratioStr',
       align: 'left',
-      width: 80,
+      width: 85,
       render: text => (
-        <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 rounded font-bold font-mono border border-slate-200 dark:border-slate-700 whitespace-nowrap">
+        <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 rounded font-bold font-mono border border-blue-200 dark:border-blue-800 whitespace-nowrap">
           {text}
         </span>
       ),
@@ -321,94 +317,97 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       key: 'maxProfitPerShare',
       align: 'right',
       width: 130,
-      render: (val: number | null, r) => {
-        if (val === null) return <Text type="secondary">-</Text>;
-        return (
-          <div className="font-mono tabular-nums whitespace-nowrap">
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-              +₹{val.toFixed(2)}
-            </span>
-            <Text type="secondary" className="text-[11px] block">
-              +₹{(r.maxProfitPerLot || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </Text>
-          </div>
-        );
-      },
-      sorter: (a, b) => (a.maxProfitPerShare ?? 0) - (b.maxProfitPerShare ?? 0)
+      render: (val: number, r) => (
+        <div className="font-mono tabular-nums text-right">
+          <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+            +₹{val.toFixed(2)}
+          </span>
+          <span className="block text-[11px] text-slate-400">
+            +₹{(val * r.lotSize).toLocaleString('en-IN')}
+          </span>
+        </div>
+      ),
+      sorter: (a, b) => a.maxProfitPerShare - b.maxProfitPerShare
     },
     {
       title: 'Max Loss',
-      key: 'maxLoss',
+      dataIndex: 'maxLossPerShare',
+      key: 'maxLossPerShare',
       align: 'right',
       width: 120,
-      render: (_, r) => {
-        if (r.isUnlimitedLoss) {
+      render: (val: number | 'Unlimited') => {
+        if (val === 'Unlimited') {
           return (
-            <Tag color="error" className="font-bold text-xs font-mono !mr-0 whitespace-nowrap">
-              Unlimited ⚠️
+            <Tag color="error" className="font-mono font-bold text-[10px] m-0">
+              UNLIMITED ⚠️
             </Tag>
           );
         }
-        if (r.maxLossPerShare !== null) {
-          return (
-            <span className="text-rose-600 dark:text-rose-400 font-medium tabular-nums font-mono whitespace-nowrap">
-              -₹{Math.abs(Number(r.maxLossPerShare)).toFixed(2)}
-            </span>
-          );
-        }
-        return <span className="text-slate-400">-</span>;
+        return (
+          <span className="font-mono font-semibold text-rose-600 dark:text-rose-400 tabular-nums">
+            -₹{Math.abs(val).toFixed(2)}
+          </span>
+        );
       }
     },
     {
       title: 'Breakeven(s)',
+      dataIndex: 'breakevens',
       key: 'breakevens',
       align: 'center',
-      width: 140,
-      render: (_, r) => (
-        <span className="text-slate-800 dark:text-slate-300 font-semibold tabular-nums font-mono whitespace-nowrap">
-          {r.breakevens.length > 0 ? r.breakevens.map(b => `₹${Math.round(b)}`).join(', ') : '-'}
-        </span>
-      )
+      width: 130,
+      render: (bes: number[]) => {
+        if (bes.length === 0) return <Text type="secondary">-</Text>;
+        return (
+          <span className="font-mono font-semibold text-slate-700 dark:text-slate-300 text-xs">
+            {bes.map(b => `₹${Math.round(b)}`).join(', ')}
+          </span>
+        );
+      }
     },
     {
       title: 'Open Interest',
       dataIndex: 'combinedOi',
       key: 'combinedOi',
       align: 'right',
-      width: 110,
-      render: (val: number | null) => (
-        <span className="tabular-nums font-mono">
-          {val !== null ? val.toLocaleString('en-IN') : '-'}
+      width: 120,
+      render: (val: number) => (
+        <span className="font-mono text-slate-600 dark:text-slate-400 tabular-nums">
+          {val.toLocaleString('en-IN')}
         </span>
       ),
-      sorter: (a, b) => (a.combinedOi ?? 0) - (b.combinedOi ?? 0)
+      sorter: (a, b) => (a.combinedOi || 0) - (b.combinedOi || 0)
     },
     {
       title: 'Volume',
       dataIndex: 'combinedVolume',
       key: 'combinedVolume',
       align: 'right',
-      width: 100,
-      render: (val: number | null) => (
-        <span className="text-slate-500 dark:text-slate-400 tabular-nums font-mono">
-          {val !== null ? val.toLocaleString('en-IN') : '-'}
+      width: 110,
+      render: (val: number) => (
+        <span className="font-mono text-slate-600 dark:text-slate-400 tabular-nums">
+          {val.toLocaleString('en-IN')}
         </span>
       ),
-      sorter: (a, b) => (a.combinedVolume ?? 0) - (b.combinedVolume ?? 0)
+      sorter: (a, b) => (a.combinedVolume || 0) - (b.combinedVolume || 0)
     },
     {
       title: 'Action',
       key: 'action',
       align: 'center',
-      width: 100,
-      render: (_, record) => (
-        <Button
-          size="middle"
-          onClick={() => handleSelectRecord(record)}
-          className="font-mono text-xs whitespace-nowrap px-3"
+      width: 90,
+      render: (_, r) => (
+        <button
+          type="button"
+          onClick={e => {
+            e.stopPropagation();
+            handleSelectRecord(r);
+          }}
+          className="font-sans text-xs px-2.5 py-1 rounded bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 transition-colors border border-blue-200 dark:border-slate-700 font-semibold inline-flex items-center gap-1 cursor-pointer"
         >
-          Payoff
-        </Button>
+          <EyeOutlined className="text-[11px]" />
+          <span>Select</span>
+        </button>
       )
     }
   ];
@@ -445,28 +444,37 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
   }, [currentSpot, stock.lotSize, onSelectStrategy]);
 
   return (
-    <div className="flex-1 overflow-x-auto bg-slate-50 dark:bg-slate-950 p-5 sm:p-7 space-y-6 font-sans text-xs transition-colors slim-scrollbar">
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-lg">
-            <AppstoreOutlined />
-          </div>
-          <div>
-            <h3 className="font-extrabold text-slate-900 dark:text-white text-base font-mono tracking-tight">
-              All Ratios Strategy Comparative Matrix ({stock.symbol} {optionType})
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Cross-evaluating 1:1, 1:2, 1:3, 1:4, 2:3, 2:5, 3:5 ratio spread structures across ATM strikes
-            </p>
-          </div>
-        </div>
+    <div className="w-full flex flex-col font-sans bg-white dark:bg-slate-950 transition-colors">
+      {/* PROFESSIONAL FLUSH HEADER BAR (MATCHING RATIO MATRIX & OPTION CHAIN) */}
+      <div className="px-4 py-2.5 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 transition-colors">
+        <Space size={10} align="center" wrap>
+          <Tag color="cyan" className="font-sans font-bold text-xs px-2.5 py-0.5 m-0 rounded-md">
+            {stock.symbol}
+          </Tag>
+          {optionType === 'CE' ? (
+            <Tag color="success" className="font-sans font-bold text-xs uppercase px-2.5 py-0.5 m-0 rounded-md">
+              CALLS (CE)
+            </Tag>
+          ) : (
+            <Tag color="error" className="font-sans font-bold text-xs uppercase px-2.5 py-0.5 m-0 rounded-md">
+              PUTS (PE)
+            </Tag>
+          )}
+          <Typography.Text strong className="font-sans text-sm tracking-tight text-slate-900 dark:text-white">
+            All Ratios Strategy Comparative Matrix
+          </Typography.Text>
+          <Tag className="font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 m-0">
+            Expiry: {expiry}
+          </Tag>
+        </Space>
 
         <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
           Showing <strong className="text-slate-900 dark:text-white">{generatedRows.length}</strong> comparative structures
         </span>
       </div>
 
-      <div className="border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+      {/* FLUSH FULL-WIDTH TABLE (NO NESTED CARD / NO EXTRA MARGINS) */}
+      <div className="w-full overflow-x-auto border-b border-slate-200 dark:border-slate-800 slim-scrollbar">
         <Table
           dataSource={generatedRows}
           columns={columns}
@@ -477,7 +485,7 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
             pageSizeOptions: ['15', '30', '50', '84'],
             size: 'small',
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} structures`,
-            className: '!px-4 !py-2.5'
+            className: '!px-4 !py-2.5 !m-0 !border-t !border-slate-200 dark:!border-slate-800'
           }}
           scroll={{ x: 1050 }}
           size="middle"
@@ -492,7 +500,7 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
               />
             )
           }}
-          rowClassName="hover:bg-slate-50 dark:hover:bg-slate-900/80 cursor-pointer"
+          rowClassName="hover:bg-slate-50 dark:hover:bg-slate-900/80 cursor-pointer font-mono text-xs"
           onRow={record => ({
             onClick: () => handleSelectRecord(record)
           })}
@@ -501,3 +509,5 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
     </div>
   );
 };
+
+export default AllRatiosScanner;

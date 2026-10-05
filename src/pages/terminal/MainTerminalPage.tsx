@@ -33,20 +33,19 @@ import { TerminalLayout, MainTabType } from '@/app/layouts/TerminalLayout';
 import { ProCard } from '@ant-design/pro-components';
 import { StatusBar } from '@/shared/components/feedback/StatusBar';
 import { LoadingScreen } from '@/shared/components/feedback/LoadingScreen';
-import { MarketSnapshotStrip } from '@/features/market-feed';
+import { MarketSnapshotStrip, AngelOneModal } from '@/features/market-feed';
 import { RatioMatrixSpreadsheet, StrategyControlBar } from '@/features/ratio-matrix';
 import { AllRatiosScanner } from '@/features/all-ratios';
+import { UnitTestsModal } from '@/shared/components/feedback/UnitTestsModal';
+import { SettingsPage } from '@/pages/settings/SettingsPage';
+import { AdminPage } from '@/pages/admin/AdminPage';
 
-// Lazy load secondary non-default views, modals, drawers, and secondary scanner tools
+// Lazy load secondary non-default scanner panels and dual option chain views
 const ControlsPanel = React.lazy(() => import('@/features/spread-scanner').then(m => ({ default: m.ControlsPanel })));
 const FilterToolbar = React.lazy(() => import('@/features/spread-scanner').then(m => ({ default: m.FilterToolbar })));
 const RatioSpreadGrid = React.lazy(() => import('@/features/spread-scanner').then(m => ({ default: m.RatioSpreadGrid })));
 const OptionChainDualView = React.lazy(() => import('@/features/option-chain').then(m => ({ default: m.OptionChainDualView })));
 const SelectedStrategyPanel = React.lazy(() => import('@/features/user-strategies').then(m => ({ default: m.SelectedStrategyPanel })));
-const AngelOneModal = React.lazy(() => import('@/features/market-feed').then(m => ({ default: m.AngelOneModal })));
-const UnitTestsModal = React.lazy(() => import('@/shared/components/feedback/UnitTestsModal').then(m => ({ default: m.UnitTestsModal })));
-const SettingsPage = React.lazy(() => import('@/pages/settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
-const AdminPage = React.lazy(() => import('@/pages/admin/AdminPage').then(m => ({ default: m.AdminPage })));
 
 const MainTerminalContent: React.FC = () => {
   const { currentUser, logout } = useAuth();
@@ -607,7 +606,7 @@ const MainTerminalContent: React.FC = () => {
       >
         {/* VIEW 1: RATIO MATRIX SPREADSHEET */}
         {activeTab === 'MATRIX' && (
-          <div className="flex flex-col gap-4 flex-1">
+          <div className="flex flex-col gap-3 sm:gap-3.5 flex-1">
             <StrategyControlBar
               stock={stock}
               optionType={optionType}
@@ -697,7 +696,7 @@ const MainTerminalContent: React.FC = () => {
         {/* VIEW 2: SPREAD SCANNER */}
         {activeTab === 'SCANNER' && (
           <React.Suspense fallback={<LoadingScreen mode="panel" tip="Calibrating Ratio Spread Scanner Grid..." />}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3 sm:gap-3.5">
               <ProCard
                 bordered
                 size="default"
@@ -812,6 +811,7 @@ const MainTerminalContent: React.FC = () => {
       <React.Suspense fallback={null}>
         {showSettingsOverlay && currentUser && (
           <SettingsPage
+            isOpen={showSettingsOverlay}
             user={currentUser}
             onLogout={logout}
             onClose={() => setShowSettingsOverlay(false)}
@@ -820,6 +820,7 @@ const MainTerminalContent: React.FC = () => {
 
         {showAdminOverlay && currentUser && (
           <AdminPage
+            isOpen={showAdminOverlay}
             currentUser={currentUser}
             onClose={() => setShowAdminOverlay(false)}
           />

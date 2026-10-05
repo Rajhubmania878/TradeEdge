@@ -671,18 +671,20 @@ export default function TerminalWorkspace({ currentUser, onLogout }: TerminalWor
         onLogout={onLogout}
       />
 
-      {/* Settings Overlay Drawer */}
+      {/* Settings Overlay Modal */}
       {showSettingsOverlay && (
         <SettingsPage
+          isOpen={showSettingsOverlay}
           user={currentUser}
           onLogout={onLogout}
           onClose={() => setShowSettingsOverlay(false)}
         />
       )}
 
-      {/* Admin Panel Overlay Drawer */}
+      {/* Admin Panel Overlay Modal */}
       {showAdminOverlay && (
         <AdminPage
+          isOpen={showAdminOverlay}
           currentUser={currentUser}
           onClose={() => setShowAdminOverlay(false)}
         />

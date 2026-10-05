@@ -105,6 +105,8 @@ export const darkThemeConfig = {
       headerBg: '#121826',
       borderColor: '#1f293d',
       fontSize: 12,
+      headerBorderRadius: 0,
+      borderRadius: 0,
     },
     Card: {
       colorBgContainer: '#121826',
@@ -218,6 +220,8 @@ export const lightThemeConfig = {
       headerBg: '#f8fafc',
       borderColor: '#e2e8f0',
       fontSize: 12,
+      headerBorderRadius: 0,
+      borderRadius: 0,
     },
     Card: {
       colorBgContainer: '#ffffff',

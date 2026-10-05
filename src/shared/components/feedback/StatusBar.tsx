@@ -61,7 +61,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
         color: colors.primaryText
       }}
     >
-      <div className="max-w-[1920px] mx-auto flex flex-wrap items-center justify-between gap-y-2 gap-x-4 px-3 sm:px-6 md:px-8">
+      <div className="max-w-[1920px] mx-auto flex flex-wrap items-center justify-between gap-y-2 gap-x-4 px-3 sm:px-4 md:px-6">
         {/* Left: Financial Matrix Tickers with Guaranteed Inline Contrast */}
         <Flex align="center" wrap="wrap" gap={12} className="w-full sm:w-auto">
           {/* Symbol & Exchange */}

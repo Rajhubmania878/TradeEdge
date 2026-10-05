@@ -435,14 +435,14 @@ export const RatioMatrixSpreadsheet: React.FC<RatioMatrixSpreadsheetProps> = ({
           {optionType === 'CE' ? (
             <Tag
               color="success"
-              className="font-sans font-bold text-xs uppercase px-2.5 py-0.5 m-0 rounded-md border-emerald-300 dark:border-emerald-800 flex items-center gap-1.5 shadow-2xs"
+              className="font-sans font-bold text-xs uppercase min-w-[104px] justify-center px-3 py-1 m-0 rounded-md flex items-center gap-1.5 shadow-2xs"
             >
               <RiseOutlined /> CALLS (CE)
             </Tag>
           ) : (
             <Tag
               color="error"
-              className="font-sans font-bold text-xs uppercase px-2.5 py-0.5 m-0 rounded-md border-rose-300 dark:border-rose-800 flex items-center gap-1.5 shadow-2xs"
+              className="font-sans font-bold text-xs uppercase min-w-[104px] justify-center px-3 py-1 m-0 rounded-md flex items-center gap-1.5 shadow-2xs"
             >
               <FallOutlined /> PUTS (PE)
             </Tag>

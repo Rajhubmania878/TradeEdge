@@ -322,80 +322,80 @@ export const RatioSpreadGrid: React.FC<RatioSpreadGridProps> = ({
   }, []);
 
   return (
-    <div className="w-full overflow-x-auto border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-sans transition-colors slim-scrollbar">
+    <div className="w-full overflow-x-auto border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-sans transition-colors slim-scrollbar select-none">
       <table className="w-full text-left text-xs whitespace-nowrap border-collapse">
-        {/* Table Header: Semantic Alignment Matching Cell Data */}
-        <thead>
-          <tr className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 text-xs font-mono select-none sticky top-0 z-10 h-11">
+        {/* Table Header: High-Contrast Elevated Standard */}
+        <thead className="shadow-[0_4px_12px_-2px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_16px_-2px_rgba(0,0,0,0.6)] z-20">
+          <tr className="bg-slate-200/95 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border-b-2 border-slate-400 dark:border-slate-600 text-xs font-sans font-extrabold select-none sticky top-0 z-10 h-11 backdrop-blur-md">
             {/* Frozen Left Column: Left aligned text */}
-            <th className="py-2.5 px-4 font-bold text-slate-900 dark:text-white sticky left-0 bg-slate-200 dark:bg-slate-900 z-10 border-r border-slate-200 dark:border-slate-800 text-left min-w-[140px]">
+            <th className="py-2.5 px-4 font-extrabold text-slate-900 dark:text-white sticky left-0 bg-slate-200 dark:bg-slate-900 z-10 border-r-2 border-slate-400 dark:border-slate-600 text-left min-w-[140px] shadow-[2px_0_6px_-1px_rgba(0,0,0,0.12)]">
               Buy Leg (Strike · Qty)
             </th>
             {/* Numeric Depth: Right aligned */}
-            <th className="py-2.5 px-3.5 font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800 text-right min-w-[140px]">
+            <th className="py-2.5 px-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700 text-right min-w-[140px]">
               <Tooltip title="Executable Ask price for Buying leg and best available Bid">
                 <span>Buy Ask / Bid ℹ️</span>
               </Tooltip>
             </th>
             {/* Sell Leg: Left aligned text */}
-            <th className="py-2.5 px-4 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-800 text-left min-w-[140px]">
+            <th className="py-2.5 px-4 font-extrabold text-slate-900 dark:text-slate-100 border-r-2 border-slate-400 dark:border-slate-600 text-left min-w-[140px]">
               Sell Leg (Strike · Qty)
             </th>
             {/* Sell Depth: Right aligned */}
-            <th className="py-2.5 px-3.5 font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800 text-right min-w-[140px]">
+            <th className="py-2.5 px-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700 text-right min-w-[140px]">
               <Tooltip title="Executable Bid price for Selling leg and best available Ask">
                 <span>Sell Bid / Ask ℹ️</span>
               </Tooltip>
             </th>
             {/* Discrete Ratio: Center aligned */}
-            <th className="py-2.5 px-3.5 text-center font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800 min-w-[90px]">
+            <th className="py-2.5 px-3.5 text-center font-extrabold text-slate-900 dark:text-slate-100 border-r-2 border-slate-400 dark:border-slate-600 min-w-[90px]">
               Ratio · Gap
             </th>
 
             {/* Core Strategy Pricing: Right aligned for magnitude comparison */}
-            <th className="py-2.5 px-3.5 text-right font-bold text-emerald-600 dark:text-emerald-400 border-r border-slate-200 dark:border-slate-800 min-w-[140px]">
+            <th className="py-2.5 px-3.5 text-right font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 dark:bg-emerald-950/40 border-r border-slate-300 dark:border-slate-700 min-w-[140px]">
               <Tooltip title="Net Executable Entry: (Long Qty × Ask) - (Short Qty × Bid). Positive = Debit, Negative = Credit">
                 <span>Net Entry ℹ️</span>
               </Tooltip>
             </th>
-            <th className="py-2.5 px-3.5 text-right font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800 min-w-[130px]">
+            <th className="py-2.5 px-3.5 text-right font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700 min-w-[130px]">
               <Tooltip title="Theoretical Mid Price Entry & Execution Slippage Cost">
                 <span>Mid Entry / Slippage</span>
               </Tooltip>
             </th>
 
             {/* Payoff & Risk: Right aligned */}
-            <th className="py-2.5 px-3.5 text-right font-bold text-emerald-700 dark:text-emerald-300 border-r border-slate-200 dark:border-slate-800 min-w-[130px]">
+            <th className="py-2.5 px-3.5 text-right font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-950/30 border-r border-slate-300 dark:border-slate-700 min-w-[130px]">
               Max Profit
             </th>
-            <th className="py-2.5 px-3.5 text-right font-bold text-slate-800 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800 min-w-[130px]">
+            <th className="py-2.5 px-3.5 text-right font-extrabold text-rose-800 dark:text-rose-300 bg-rose-500/10 dark:bg-rose-950/30 border-r border-slate-300 dark:border-slate-700 min-w-[130px]">
               Max Loss
             </th>
             {/* Breakeven points: Center aligned */}
-            <th className="py-2.5 px-3.5 text-center font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800 min-w-[130px]">
+            <th className="py-2.5 px-3.5 text-center font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700 min-w-[130px]">
               Breakeven(s)
             </th>
 
             {/* Greeks & IV: Right aligned */}
-            <th className="py-2.5 px-3.5 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 min-w-[130px]">
+            <th className="py-2.5 px-3.5 text-right font-bold text-slate-700 dark:text-slate-300 border-r border-slate-300 dark:border-slate-700 min-w-[130px]">
               <Tooltip title="Net Strategy Delta and Daily Theta Decay per Lot">
                 <span>Net Greeks (Δ · Θ)</span>
               </Tooltip>
             </th>
-            <th className="py-2.5 px-3.5 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 min-w-[110px]">
+            <th className="py-2.5 px-3.5 text-right font-bold text-slate-700 dark:text-slate-300 border-r border-slate-300 dark:border-slate-700 min-w-[110px]">
               IV (Buy / Sell)
             </th>
 
             {/* Liquidity: Right aligned */}
-            <th className="py-2.5 px-3.5 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 min-w-[130px]">
+            <th className="py-2.5 px-3.5 text-right font-bold text-slate-700 dark:text-slate-300 border-r border-slate-300 dark:border-slate-700 min-w-[130px]">
               Open Interest
             </th>
-            <th className="py-2.5 px-3.5 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 min-w-[100px]">
+            <th className="py-2.5 px-3.5 text-right font-bold text-slate-700 dark:text-slate-300 border-r border-slate-300 dark:border-slate-700 min-w-[100px]">
               Volume
             </th>
 
             {/* Action: Center aligned */}
-            <th className="py-2.5 px-3.5 text-center font-semibold text-slate-600 dark:text-slate-400 min-w-[100px] whitespace-nowrap">
+            <th className="py-2.5 px-3.5 text-center font-extrabold text-slate-900 dark:text-slate-100 min-w-[100px] whitespace-nowrap">
               Action
             </th>
           </tr>
