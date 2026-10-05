@@ -43,6 +43,7 @@ interface RatioMatrixSpreadsheetProps {
   exchange?: Exchange;
   density?: 'compact' | 'comfortable';
   showAdvancedData?: boolean;
+  maxVisibleRows?: number | 'ALL';
 }
 
 export const RatioMatrixSpreadsheet: React.FC<RatioMatrixSpreadsheetProps> = ({
@@ -63,7 +64,8 @@ export const RatioMatrixSpreadsheet: React.FC<RatioMatrixSpreadsheetProps> = ({
   selectedStrategyId,
   exchange = 'NSE',
   density = 'comfortable',
-  showAdvancedData = false
+  showAdvancedData = false,
+  maxVisibleRows = 'ALL'
 }) => {
   // Determine actual exchange step
   const actualExchangeStep = stock.strikeStep;
@@ -101,20 +103,6 @@ export const RatioMatrixSpreadsheet: React.FC<RatioMatrixSpreadsheetProps> = ({
     return { allValid, validated };
   }, [targetGaps, effectiveStkStep]);
 
-  // Filter visible strikes based on MIN and MAX
-  const visibleStrikes = useMemo(() => {
-    const filtered = allStrikes.filter(s => {
-      if (minStrike !== 'ALL' && s < minStrike) return false;
-      if (maxStrike !== 'ALL' && s > maxStrike) return false;
-      return true;
-    });
-    // If filter filtered everything out (e.g. inverted min/max), fallback to all listed strikes
-    if (filtered.length === 0 && allStrikes.length > 0) {
-      return allStrikes;
-    }
-    return filtered;
-  }, [allStrikes, minStrike, maxStrike]);
-
   // ATM Strike
   const atmStrike = useMemo(() => {
     if (allStrikes.length === 0) return currentSpot;
@@ -129,6 +117,35 @@ export const RatioMatrixSpreadsheet: React.FC<RatioMatrixSpreadsheetProps> = ({
     }
     return closest;
   }, [allStrikes, currentSpot]);
+
+  // Filter visible strikes based on MIN and MAX, and limit by maxVisibleRows centered around ATM
+  const visibleStrikes = useMemo(() => {
+    let filtered = allStrikes.filter(s => {
+      if (minStrike !== 'ALL' && s < minStrike) return false;
+      if (maxStrike !== 'ALL' && s > maxStrike) return false;
+      return true;
+    });
+    // If filter filtered everything out (e.g. inverted min/max), fallback to all listed strikes
+    if (filtered.length === 0 && allStrikes.length > 0) {
+      filtered = allStrikes;
+    }
+
+    if (maxVisibleRows !== 'ALL' && typeof maxVisibleRows === 'number' && filtered.length > maxVisibleRows) {
+      let atmIndex = filtered.findIndex(s => s >= atmStrike);
+      if (atmIndex === -1) atmIndex = Math.floor(filtered.length / 2);
+
+      const half = Math.floor(maxVisibleRows / 2);
+      let startIndex = Math.max(0, atmIndex - half);
+      let endIndex = startIndex + maxVisibleRows;
+      if (endIndex > filtered.length) {
+        endIndex = filtered.length;
+        startIndex = Math.max(0, endIndex - maxVisibleRows);
+      }
+      return filtered.slice(startIndex, endIndex);
+    }
+
+    return filtered;
+  }, [allStrikes, minStrike, maxStrike, maxVisibleRows, atmStrike]);
 
   // Fast O(1) Set for strike lookups inside matrix loops
   const strikesSet = useMemo(() => new Set(allStrikes), [allStrikes]);

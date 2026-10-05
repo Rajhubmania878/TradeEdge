@@ -83,16 +83,14 @@ export const SelectedStrategyPanel: React.FC<SelectedStrategyPanelProps> = ({
             </Flex>
           </Flex>
 
-          <Tooltip title="Close Strategy Panel">
-            <Button
-              type="text"
-              size="middle"
-              icon={<CloseOutlined className="text-slate-400 hover:text-slate-900 dark:hover:text-white text-base" />}
-              onClick={onClose}
-              className="rounded-xl"
-              aria-label="Close"
-            />
-          </Tooltip>
+          <Button
+            type="text"
+            size="middle"
+            icon={<CloseOutlined className="text-slate-400 hover:text-slate-900 dark:hover:text-white text-base" />}
+            onClick={onClose}
+            className="rounded-xl"
+            aria-label="Close"
+          />
         </Flex>
 
         {/* Ant Design Pro Grid: Symmetrical Two-Column Layout */}

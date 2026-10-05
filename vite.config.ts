@@ -34,7 +34,9 @@ export default defineConfig({
     emptyOutDir: true,
     target: 'es2022',
     minify: 'esbuild',
+    cssMinify: 'esbuild',
     cssCodeSplit: true,
+    reportCompressedSize: false,
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {

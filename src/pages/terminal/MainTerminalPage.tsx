@@ -70,6 +70,8 @@ const MainTerminalContent: React.FC = () => {
     setIsFullscreen,
     density,
     setDensity,
+    maxVisibleRows,
+    setMaxVisibleRows,
     showAdvancedData,
     setShowAdvancedData,
     exchange,
@@ -635,6 +637,8 @@ const MainTerminalContent: React.FC = () => {
               atmStrike={atmStrike}
               density={density}
               onChangeDensity={setDensity}
+              maxVisibleRows={maxVisibleRows}
+              onChangeMaxVisibleRows={setMaxVisibleRows}
               showAdvancedData={showAdvancedData}
               onToggleAdvancedData={() => setShowAdvancedData(!showAdvancedData)}
               onReset={resetStockConfig}
@@ -678,6 +682,7 @@ const MainTerminalContent: React.FC = () => {
                 exchange={exchange}
                 density={density}
                 showAdvancedData={showAdvancedData}
+                maxVisibleRows={maxVisibleRows}
               />
             </ProCard>
 

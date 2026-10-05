@@ -20,7 +20,8 @@ import {
   SlidersOutlined,
   FileTextOutlined,
   NumberOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  UnorderedListOutlined
 } from '@ant-design/icons';
 
 const { Text } = Typography;
@@ -50,6 +51,8 @@ interface StrategyControlBarProps {
   atmStrike: number;
   density: 'compact' | 'comfortable';
   onChangeDensity: (density: 'compact' | 'comfortable') => void;
+  maxVisibleRows?: number | 'ALL';
+  onChangeMaxVisibleRows?: (rows: number | 'ALL') => void;
   showAdvancedData: boolean;
   onToggleAdvancedData: () => void;
   onReset: () => void;
@@ -83,6 +86,8 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
   atmStrike,
   density,
   onChangeDensity,
+  maxVisibleRows = 'ALL',
+  onChangeMaxVisibleRows,
   showAdvancedData,
   onToggleAdvancedData,
   onReset,
@@ -220,16 +225,14 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
 
         {/* Right: Reset & Save Preset Actions */}
         <div className="flex items-center gap-2">
-          <Tooltip title="Reset parameters to default">
-            <Button
-              size="middle"
-              icon={<ReloadOutlined />}
-              onClick={onReset}
-              className="dark:bg-slate-800 dark:border-slate-700 text-xs font-semibold px-3"
-            >
-              Reset
-            </Button>
-          </Tooltip>
+          <Button
+            size="middle"
+            icon={<ReloadOutlined />}
+            onClick={onReset}
+            className="dark:bg-slate-800 dark:border-slate-700 text-xs font-semibold px-3"
+          >
+            Reset
+          </Button>
 
           <Button
             size="middle"
@@ -456,17 +459,17 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
           </Flex>
         </ProCard>
 
-        {/* Card 4: DENSITY & GREEKS */}
+        {/* Card 4: DENSITY, ROWS & GREEKS */}
         <ProCard
-          colSpan={{ xs: 24, sm: 24, md: 12, xl: 5 }}
+          colSpan={{ xs: 24, sm: 24, md: 12, xl: 6 }}
           bordered
           size="small"
           className="shadow-2xs rounded-lg dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800"
           bodyStyle={{ padding: '12px 14px' }}
         >
-          <Flex align="center" gap={10} className="w-full">
+          <Flex align="center" gap={8} className="w-full">
             {/* DENSITY */}
-            <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <AppstoreOutlined className="text-slate-500" /> DENSITY
               </span>
@@ -484,8 +487,33 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               />
             </div>
 
+            {/* ROWS (Placed directly between DENSITY and GREEKS) */}
+            <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                <UnorderedListOutlined className="text-slate-500" /> ROWS
+              </span>
+              <Select
+                size="middle"
+                virtual={false}
+                popupMatchSelectWidth={false}
+                value={maxVisibleRows}
+                onChange={val => onChangeMaxVisibleRows && onChangeMaxVisibleRows(val)}
+                className="w-full font-sans text-xs"
+                options={[
+                  { label: 'ALL', value: 'ALL' },
+                  { label: '10', value: 10 },
+                  { label: '15', value: 15 },
+                  { label: '20', value: 20 },
+                  { label: '25', value: 25 },
+                  { label: '30', value: 30 },
+                  { label: '50', value: 50 },
+                  { label: '100', value: 100 }
+                ]}
+              />
+            </div>
+
             {/* GREEKS */}
-            <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <SlidersOutlined className="text-slate-500" /> GREEKS
               </span>

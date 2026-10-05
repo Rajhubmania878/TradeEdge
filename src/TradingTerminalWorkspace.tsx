@@ -59,6 +59,7 @@ export default function TerminalWorkspace({ currentUser, onLogout }: TerminalWor
   const [isFocusMode, setIsFocusMode] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
+  const [maxVisibleRows, setMaxVisibleRows] = useState<number | 'ALL'>('ALL');
   const [showAdvancedData, setShowAdvancedData] = useState<boolean>(false);
 
   // Top-Level Exchange Selection (NSE / BSE)
@@ -742,6 +743,8 @@ export default function TerminalWorkspace({ currentUser, onLogout }: TerminalWor
               atmStrike={atmStrike}
               density={density}
               onChangeDensity={setDensity}
+              maxVisibleRows={maxVisibleRows}
+              onChangeMaxVisibleRows={setMaxVisibleRows}
               showAdvancedData={showAdvancedData}
               onToggleAdvancedData={() => setShowAdvancedData(!showAdvancedData)}
               onReset={handleResetStockConfig}
@@ -779,6 +782,7 @@ export default function TerminalWorkspace({ currentUser, onLogout }: TerminalWor
               exchange={exchange}
               density={density}
               showAdvancedData={showAdvancedData}
+              maxVisibleRows={maxVisibleRows}
             />
 
             {selectedStrategyRow && (

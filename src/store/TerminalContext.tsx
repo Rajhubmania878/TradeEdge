@@ -40,6 +40,8 @@ interface TerminalContextType {
   setIsFullscreen: React.Dispatch<React.SetStateAction<boolean>>;
   density: 'compact' | 'comfortable';
   setDensity: React.Dispatch<React.SetStateAction<'compact' | 'comfortable'>>;
+  maxVisibleRows: number | 'ALL';
+  setMaxVisibleRows: React.Dispatch<React.SetStateAction<number | 'ALL'>>;
   showAdvancedData: boolean;
   setShowAdvancedData: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -120,6 +122,7 @@ export const TerminalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isFocusMode, setIsFocusMode] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
+  const [maxVisibleRows, setMaxVisibleRows] = useState<number | 'ALL'>('ALL');
   const [showAdvancedData, setShowAdvancedData] = useState<boolean>(false);
 
   const [exchange, setExchange] = useState<Exchange>('NSE');
@@ -250,6 +253,8 @@ export const TerminalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setIsFullscreen,
         density,
         setDensity,
+        maxVisibleRows,
+        setMaxVisibleRows,
         showAdvancedData,
         setShowAdvancedData,
         exchange,

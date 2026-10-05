@@ -113,16 +113,14 @@ export const FilterToolbar: React.FC<FilterToolbarProps> = ({
 
           {/* Reset button */}
           {hasActiveFilters && (
-            <Tooltip title="Reset filters to default">
-              <Button
-                size="middle"
-                icon={<ReloadOutlined />}
-                onClick={resetFilters}
-                className="text-xs px-3"
-              >
-                Reset
-              </Button>
-            </Tooltip>
+            <Button
+              size="middle"
+              icon={<ReloadOutlined />}
+              onClick={resetFilters}
+              className="text-xs px-3"
+            >
+              Reset
+            </Button>
           )}
         </Space>
 

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=esm --outfile=server.js --external:express --external:compression --external:vite && esbuild server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --external:express --external:compression --external:vite && esbuild server/app.ts --bundle --platform=node --format=esm --outfile=api/index.js --external:express --external:compression",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=esm --outfile=server.js --external:express --external:compression --external:vite && cp server.js dist/server.js && esbuild server/app.ts --bundle --platform=node --format=esm --outfile=api/index.js --external:express --external:compression",
     "start": "node server.js",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"

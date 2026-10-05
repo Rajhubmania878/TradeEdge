@@ -367,14 +367,27 @@ export const StockSelectorDropdown: React.FC<StockSelectorDropdownProps> = ({
   const updatePosition = React.useCallback(() => {
     if (dropdownRef.current) {
       const rect = dropdownRef.current.getBoundingClientRect();
-      const popupWidth = Math.min(window.innerWidth - 32, window.innerWidth < 640 ? window.innerWidth - 32 : 600);
+      const popupWidth = popupRef.current
+        ? popupRef.current.getBoundingClientRect().width
+        : Math.min(window.innerWidth - 32, 580);
+
       let left = rect.left;
       if (left + popupWidth > window.innerWidth - 16) {
         left = window.innerWidth - popupWidth - 16;
       }
       if (left < 16) left = 16;
 
-      const top = rect.bottom + 6;
+      let top = rect.bottom + 6;
+      const popupHeight = popupRef.current
+        ? popupRef.current.getBoundingClientRect().height
+        : 500;
+
+      if (top + popupHeight > window.innerHeight - 16 && rect.top - popupHeight - 6 > 16) {
+        top = Math.max(16, rect.top - popupHeight - 6);
+      } else if (top + popupHeight > window.innerHeight - 16) {
+        top = Math.max(16, window.innerHeight - popupHeight - 16);
+      }
+
       setCoords({ top, left });
     }
   }, []);
@@ -382,9 +395,13 @@ export const StockSelectorDropdown: React.FC<StockSelectorDropdownProps> = ({
   useEffect(() => {
     if (isOpen) {
       updatePosition();
+      const raf = requestAnimationFrame(() => {
+        updatePosition();
+      });
       window.addEventListener('resize', updatePosition);
       window.addEventListener('scroll', updatePosition, true);
       return () => {
+        cancelAnimationFrame(raf);
         window.removeEventListener('resize', updatePosition);
         window.removeEventListener('scroll', updatePosition, true);
       };
@@ -521,7 +538,7 @@ export const StockSelectorDropdown: React.FC<StockSelectorDropdownProps> = ({
             left: `${coords.left}px`,
             zIndex: 99999
           }}
-          className="w-[calc(100vw-32px)] sm:w-[560px] md:w-[650px] max-h-[80vh] sm:max-h-[600px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col antialiased animate-in fade-in zoom-in-95 duration-100"
+          className="w-[calc(100vw-32px)] sm:w-[540px] md:w-[580px] max-w-[calc(100vw-32px)] max-h-[calc(100vh-32px)] sm:max-h-[580px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col antialiased animate-in fade-in zoom-in-95 duration-100"
         >
           {exchange === 'BSE' && (
             <div className="p-2.5 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800">

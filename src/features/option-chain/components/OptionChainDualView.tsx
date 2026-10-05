@@ -118,16 +118,16 @@ export const OptionChainDualView: React.FC<OptionChainDualViewProps> = ({
               {(viewFilter === 'DUAL' || viewFilter === 'CE') && (
                 <>
                   <th className="py-2.5 px-3 text-right font-bold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-emerald-500/10 dark:bg-emerald-950/30">
-                    <Tooltip title="Call Open Interest"><span>CE OI</span></Tooltip>
+                    CE OI
                   </th>
                   <th className="py-2.5 px-2.5 text-right font-bold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-emerald-500/10 dark:bg-emerald-950/30">
-                    <Tooltip title="Call Volume Traded"><span>CE Vol</span></Tooltip>
+                    CE Vol
                   </th>
                   <th className="py-2.5 px-2.5 text-right font-bold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-emerald-500/10 dark:bg-emerald-950/30">
-                    <Tooltip title="Call Implied Volatility"><span>CE IV</span></Tooltip>
+                    CE IV
                   </th>
                   <th className="py-2.5 px-2.5 text-right font-bold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-emerald-500/10 dark:bg-emerald-950/30">
-                    <Tooltip title="Call Option Delta"><span>Delta</span></Tooltip>
+                    Delta
                   </th>
                   <th className="py-2.5 px-2.5 text-right text-emerald-800 dark:text-emerald-300 font-extrabold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-emerald-500/15 dark:bg-emerald-950/40">
                     CE Bid
@@ -159,16 +159,16 @@ export const OptionChainDualView: React.FC<OptionChainDualViewProps> = ({
                     PE Ask
                   </th>
                   <th className="py-2.5 px-2.5 text-left font-bold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-rose-500/10 dark:bg-rose-950/30">
-                    <Tooltip title="Put Option Delta"><span>Delta</span></Tooltip>
+                    Delta
                   </th>
                   <th className="py-2.5 px-2.5 text-left font-bold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-rose-500/10 dark:bg-rose-950/30">
-                    <Tooltip title="Put Implied Volatility"><span>PE IV</span></Tooltip>
+                    PE IV
                   </th>
                   <th className="py-2.5 px-2.5 text-left font-bold border-r border-slate-300 dark:border-slate-800 whitespace-nowrap bg-rose-500/10 dark:bg-rose-950/30">
-                    <Tooltip title="Put Volume Traded"><span>PE Vol</span></Tooltip>
+                    PE Vol
                   </th>
                   <th className="py-2.5 px-3 text-left font-bold whitespace-nowrap bg-rose-500/10 dark:bg-rose-950/30">
-                    <Tooltip title="Put Open Interest"><span>PE OI</span></Tooltip>
+                    PE OI
                   </th>
                 </>
               )}

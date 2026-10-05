@@ -347,20 +347,18 @@ export const TerminalLayout: React.FC<TerminalLayoutProps> = ({
 
                 {/* Compact User Avatar Button */}
                 <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
-                  <Tooltip title={`${currentUser?.displayName || 'System Admin'} (Account)`}>
-                    <button
-                      type="button"
-                      className="flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:ring-2 hover:ring-blue-500/30 transition-all shadow-2xs cursor-pointer"
-                      aria-label="User Account Menu"
+                  <button
+                    type="button"
+                    className="flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:ring-2 hover:ring-blue-500/30 transition-all shadow-2xs cursor-pointer"
+                    aria-label="User Account Menu"
+                  >
+                    <Avatar
+                      size={26}
+                      className="bg-blue-600 text-white font-bold text-xs"
                     >
-                      <Avatar
-                        size={26}
-                        className="bg-blue-600 text-white font-bold text-xs"
-                      >
-                        {currentUser?.displayName?.[0]?.toUpperCase() || 'S'}
-                      </Avatar>
-                    </button>
-                  </Tooltip>
+                      {currentUser?.displayName?.[0]?.toUpperCase() || 'S'}
+                    </Avatar>
+                  </button>
                 </Dropdown>
               </Flex>
             </div>

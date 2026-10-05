@@ -11,6 +11,8 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsconfig.tsbuildinfo",
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
