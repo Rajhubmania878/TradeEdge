@@ -1,11 +1,17 @@
 import express from 'express';
 import compression from 'compression';
-import path from 'path';
-import fs from 'fs';
 import { authRouter } from './modules/auth/auth.routes';
 import { marketRouter } from './modules/market/market.routes';
 import { strategyRouter } from './modules/strategies/strategy.routes';
 import { adminRouter } from './modules/admin/admin.routes';
+
+// Import universe datasets directly to guarantee availability in all runtime environments
+// (including Vercel Serverless Functions where process.cwd() dynamic reads fail)
+import angelUnderlyings from '../src/data/angelUnderlyings.json';
+import angelInstrumentsMap from '../src/data/angelInstrumentsMap.json';
+import bseUnderlyings from '../src/data/bseUnderlyings.json';
+import bseInstrumentsMap from '../src/data/bseInstrumentsMap.json';
+import bseCashUniverse from '../src/data/bseCashUniverse.json';
 
 export const app = express();
 
@@ -24,50 +30,51 @@ app.use((req, res, next) => {
   next();
 });
 
-// Cache static JSON universe files in memory for zero-latency I/O responses
-const universeCache: Record<string, string> = {};
-
-function getCachedUniverseJson(filePath: string): string {
-  if (!universeCache[filePath]) {
-    const fullPath = path.join(process.cwd(), filePath);
-    if (fs.existsSync(fullPath)) {
-      universeCache[filePath] = fs.readFileSync(fullPath, 'utf8');
-    } else {
-      universeCache[filePath] = JSON.stringify([]);
-    }
-  }
-  return universeCache[filePath];
-}
+// Pre-serialized JSON strings for zero-serialization-overhead responses
+const nseUnderlyingsJson = JSON.stringify(angelUnderlyings);
+const nseInstrumentsJson = JSON.stringify(angelInstrumentsMap);
+const bseUnderlyingsJson = JSON.stringify(bseUnderlyings);
+const bseInstrumentsJson = JSON.stringify(bseInstrumentsMap);
+const bseCashJson = JSON.stringify(bseCashUniverse);
 
 // Create API Router
 const apiRouter = express.Router();
 
 // Health Check
 apiRouter.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now(), service: 'Ratio Spread API' });
+  res.json({
+    status: 'ok',
+    timestamp: Date.now(),
+    service: 'Ratio Spread API',
+    universeLoaded: {
+      nse: angelUnderlyings.length,
+      bse: bseUnderlyings.length,
+      bseCash: bseCashUniverse.length
+    }
+  });
 });
 
 // Static Universe Datasets Endpoints with In-Memory Caching & HTTP Cache-Control
-const sendCachedJson = (res: express.Response, filePath: string) => {
+const sendStaticUniverse = (res: express.Response, jsonStr: string) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
-  res.send(getCachedUniverseJson(filePath));
+  res.send(jsonStr);
 };
 
 apiRouter.get('/universe/nse-underlyings', (_req, res) => {
-  sendCachedJson(res, 'src/data/angelUnderlyings.json');
+  sendStaticUniverse(res, nseUnderlyingsJson);
 });
 apiRouter.get('/universe/nse-instruments', (_req, res) => {
-  sendCachedJson(res, 'src/data/angelInstrumentsMap.json');
+  sendStaticUniverse(res, nseInstrumentsJson);
 });
 apiRouter.get('/universe/bse-underlyings', (_req, res) => {
-  sendCachedJson(res, 'src/data/bseUnderlyings.json');
+  sendStaticUniverse(res, bseUnderlyingsJson);
 });
 apiRouter.get('/universe/bse-instruments', (_req, res) => {
-  sendCachedJson(res, 'src/data/bseInstrumentsMap.json');
+  sendStaticUniverse(res, bseInstrumentsJson);
 });
 apiRouter.get('/universe/bse-cash', (_req, res) => {
-  sendCachedJson(res, 'src/data/bseCashUniverse.json');
+  sendStaticUniverse(res, bseCashJson);
 });
 
 // Mount Domain Module Routers
@@ -78,5 +85,20 @@ apiRouter.use('/admin', adminRouter);
 
 // Mount apiRouter on '/api'
 app.use('/api', apiRouter);
+
+// Support serverless environments (e.g. Vercel) where URL rewrites might strip the '/api' prefix
+app.use((req, res, next) => {
+  if (
+    req.path.startsWith('/universe') ||
+    req.path.startsWith('/auth') ||
+    req.path.startsWith('/angel') ||
+    req.path.startsWith('/user') ||
+    req.path.startsWith('/admin') ||
+    req.path === '/health'
+  ) {
+    return apiRouter(req, res, next);
+  }
+  next();
+});
 
 export default app;

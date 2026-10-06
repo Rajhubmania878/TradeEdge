@@ -49,31 +49,73 @@ export function initializeUniverseData(): Promise<void> {
 
   initPromise = (async () => {
     try {
-      // Load critical F&O datasets concurrently for near-instant (<50ms) startup
-      const [
-        nseUnderlyings,
-        nseInstruments,
-        bseUnderlyings,
-        bseInstruments
-      ] = await Promise.all([
-        fetch('/api/universe/nse-underlyings').then(r => r.json()),
-        fetch('/api/universe/nse-instruments').then(r => r.json()),
-        fetch('/api/universe/bse-underlyings').then(r => r.json()),
-        fetch('/api/universe/bse-instruments').then(r => r.json())
-      ]);
+      let nseUnderlyings: any[] = [];
+      let nseInstruments: any = null;
+      let bseUnderlyings: any[] = [];
+      let bseInstruments: any = null;
+
+      // 1. Attempt to fetch pre-cached compressed datasets from API endpoints
+      try {
+        const [u1, i1, u2, i2] = await Promise.all([
+          fetch('/api/universe/nse-underlyings').then(r => (r.ok ? r.json() : null)),
+          fetch('/api/universe/nse-instruments').then(r => (r.ok ? r.json() : null)),
+          fetch('/api/universe/bse-underlyings').then(r => (r.ok ? r.json() : null)),
+          fetch('/api/universe/bse-instruments').then(r => (r.ok ? r.json() : null))
+        ]);
+
+        if (Array.isArray(u1) && u1.length > 0) nseUnderlyings = u1;
+        if (i1 && typeof i1 === 'object' && Object.keys(i1).length > 0) nseInstruments = i1;
+        if (Array.isArray(u2) && u2.length > 0) bseUnderlyings = u2;
+        if (i2 && typeof i2 === 'object' && Object.keys(i2).length > 0) bseInstruments = i2;
+      } catch (networkErr) {
+        console.warn('[UniverseManager] API fetch failed, falling back to local module imports:', networkErr);
+      }
+
+      // 2. If API returned empty arrays or failed (common on serverless cold starts, static hosts like Vercel, or offline)
+      if (nseUnderlyings.length === 0 || !nseInstruments || bseUnderlyings.length === 0 || !bseInstruments) {
+        console.info('[UniverseManager] Loading local universe dataset fallback via code-split chunks...');
+        const [
+          localNseUnderlyings,
+          localNseInstruments,
+          localBseUnderlyings,
+          localBseInstruments
+        ] = await Promise.all([
+          import('./angelUnderlyings.json').then(m => m.default || m),
+          import('./angelInstrumentsMap.json').then(m => m.default || m),
+          import('./bseUnderlyings.json').then(m => m.default || m),
+          import('./bseInstrumentsMap.json').then(m => m.default || m)
+        ]);
+
+        if (nseUnderlyings.length === 0) nseUnderlyings = localNseUnderlyings;
+        if (!nseInstruments) nseInstruments = localNseInstruments;
+        if (bseUnderlyings.length === 0) bseUnderlyings = localBseUnderlyings;
+        if (!bseInstruments) bseInstruments = localBseInstruments;
+      }
 
       setNseUniverseData(nseUnderlyings, nseInstruments);
       setBseUniverseData(bseUnderlyings, bseInstruments, []);
 
       // Asynchronously fetch large BSE cash universe in the background without blocking terminal launch
-      fetch('/api/universe/bse-cash')
-        .then(r => r.json())
-        .then(bseCash => {
-          setBseCashUniverse(bseCash);
-        })
-        .catch(err => {
-          console.warn('[UniverseManager] Background BSE cash load:', err);
-        });
+      const loadBseCash = async () => {
+        try {
+          const res = await fetch('/api/universe/bse-cash');
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              setBseCashUniverse(data);
+              return;
+            }
+          }
+        } catch {
+          // fall through to local fallback
+        }
+        const localCash = await import('./bseCashUniverse.json').then(m => m.default || m);
+        setBseCashUniverse(localCash);
+      };
+
+      loadBseCash().catch(err => {
+        console.warn('[UniverseManager] Background BSE cash load:', err);
+      });
       
       const { marketDataFeed } = await import('../services/marketDataFeed');
       marketDataFeed.reinitCurrentContracts();

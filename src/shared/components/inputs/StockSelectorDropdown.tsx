@@ -4,7 +4,8 @@ import { UnderlyingStock, Exchange } from '@/shared/types';
 import {
   getUnderlyingsForExchange,
   getCashStocksForExchange,
-  getAvailableSectorsForExchange
+  getAvailableSectorsForExchange,
+  initializeUniverseData
 } from '@/data/universeManager';
 import {
   Button,
@@ -309,10 +310,27 @@ export const StockSelectorDropdown: React.FC<StockSelectorDropdownProps> = ({
     }
   };
 
-  const optionUnderlyings = useMemo(() => getUnderlyingsForExchange(exchange), [exchange]);
+  const [universeSyncCount, setUniverseSyncCount] = useState(0);
+
+  useEffect(() => {
+    if (isOpen) {
+      const current = getUnderlyingsForExchange(exchange);
+      if (current.length === 0) {
+        initializeUniverseData()
+          .then(() => {
+            setUniverseSyncCount(c => c + 1);
+          })
+          .catch(err => {
+            console.error('[StockSelectorDropdown] Universe initialization error:', err);
+          });
+      }
+    }
+  }, [isOpen, exchange]);
+
+  const optionUnderlyings = useMemo(() => getUnderlyingsForExchange(exchange), [exchange, isOpen, universeSyncCount]);
   const optionUnderlyingsSet = useMemo(() => new Set(optionUnderlyings.map(u => u.symbol.toUpperCase())), [optionUnderlyings]);
-  const cashStocks = useMemo(() => getCashStocksForExchange(exchange), [exchange]);
-  const availableSectors = useMemo(() => ['ALL', ...getAvailableSectorsForExchange(exchange)], [exchange]);
+  const cashStocks = useMemo(() => getCashStocksForExchange(exchange), [exchange, isOpen, universeSyncCount]);
+  const availableSectors = useMemo(() => ['ALL', ...getAvailableSectorsForExchange(exchange)], [exchange, isOpen, universeSyncCount]);
 
   const filteredStocks = useMemo(() => {
     if (!isOpen) {
