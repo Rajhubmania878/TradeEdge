@@ -26,16 +26,32 @@ export class MarketController {
 
   public async getQuotes(req: Request, res: Response) {
     try {
+      const status = marketService.getStatus();
+      if (!status.connected || status.sessionExpired) {
+        return res.json({
+          success: true,
+          data: [],
+          connected: false,
+          sessionExpired: Boolean(status.sessionExpired),
+          simulatedFallback: true
+        });
+      }
+
       const quotes = await marketService.getQuotes(req.body);
+      const postStatus = marketService.getStatus();
       return res.json({
         success: true,
         data: quotes,
+        connected: postStatus.connected,
+        sessionExpired: Boolean(postStatus.sessionExpired),
         simulatedFallback: quotes.length === 0
       });
     } catch (err: any) {
       return res.json({
         success: true,
         data: [],
+        connected: false,
+        sessionExpired: true,
         error: err.message || 'Quote fetch fallback triggered'
       });
     }

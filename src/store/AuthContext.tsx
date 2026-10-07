@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile } from '@/shared/types';
 import { authService } from '@/services/authService';
+import { marketDataFeed } from '@/services/marketDataFeed';
 
 export type ViewMode =
   | 'LANDING'
@@ -53,7 +54,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
   }, []);
 
+  // Global listener for session expiration (Auth 401s or Broker disconnection)
+  useEffect(() => {
+    const handleSessionExpired = (e: Event) => {
+      const detail = (e as CustomEvent)?.detail;
+      console.warn('[AuthContext] Session expired detected. Redirecting to LOGIN viewMode:', detail?.message || 'Session expired');
+      authService.clearSession();
+      setCurrentUser(null);
+      setIsUniverseLoaded(false);
+      setViewMode('LOGIN');
+      marketDataFeed.stopAllPolling();
+    };
+
+    window.addEventListener('session-expired', handleSessionExpired);
+    return () => {
+      window.removeEventListener('session-expired', handleSessionExpired);
+    };
+  }, []);
+
   const logout = async () => {
+    marketDataFeed.stopAllPolling();
     await authService.logout();
     setCurrentUser(null);
     setIsUniverseLoaded(false);

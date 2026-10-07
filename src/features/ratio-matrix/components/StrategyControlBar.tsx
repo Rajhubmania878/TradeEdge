@@ -6,7 +6,6 @@ import {
   ReferenceStrikeMode,
   SavedPreset
 } from '@/shared/types';
-import { ProCard } from '@ant-design/pro-components';
 import { Select, Button, Tooltip, Popover, InputNumber, Flex, Tag, Typography, message, Segmented } from 'antd';
 import {
   ReloadOutlined,
@@ -178,9 +177,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 space-y-3 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 space-y-3 sm:space-y-3.5 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
       {/* 1. TOP ROW: RATIO QUICK BUTTONS & RESET/SAVE PRESET */}
-      <Flex align="center" justify="space-between" wrap="wrap" gap={10}>
+      <Flex align="center" justify="space-between" wrap="wrap" gap={10} className="w-full">
         {/* Left: Ratio Buttons */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-sans shrink-0">
@@ -246,26 +245,16 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
         </div>
       </Flex>
 
-      {/* 2. PARAMETER MATRIX (4 Clean ProCards Grid matching Reference Image) */}
-      <ProCard
-        ghost
-        gutter={[12, 12]}
-        wrap
-      >
+      {/* 2. PARAMETER MATRIX (4 Clean Cards in a Single Row) */}
+      <div className="flex flex-nowrap items-stretch gap-2 w-full overflow-x-auto pb-0.5">
         {/* Card 1: TYPE & MODE */}
-        <ProCard
-          colSpan={{ xs: 24, sm: 24, md: 10, xl: 5 }}
-          bordered
-          size="small"
-          className="shadow-2xs rounded-lg dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800"
-          bodyStyle={{ padding: '12px 14px' }}
-        >
-          <Flex align="center" gap={10} className="w-full">
+        <div className="flex-[1] min-w-[185px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+          <Flex align="center" gap={8} className="w-full">
             {/* TYPE (CE / PE) */}
             <div className="flex-1 flex flex-col gap-1.5">
-              <Text type="secondary" strong className="text-[11px] uppercase tracking-wider flex items-center gap-1 font-mono">
-                <ThunderboltOutlined /> TYPE
-              </Text>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                <ThunderboltOutlined className="text-slate-500" /> TYPE
+              </span>
               <Segmented
                 block
                 value={optionType}
@@ -287,9 +276,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
 
             {/* MODE */}
             <div className="flex-1 flex flex-col gap-1.5">
-              <Text type="secondary" strong className="text-[11px] uppercase tracking-wider flex items-center gap-1 truncate font-mono">
-                <SettingOutlined /> MODE
-              </Text>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                <SettingOutlined className="text-slate-500" /> MODE
+              </span>
               <Select
                 size="middle"
                 value={direction}
@@ -302,19 +291,13 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               />
             </div>
           </Flex>
-        </ProCard>
+        </div>
 
         {/* Card 2: GAP, CNT, STK, REF */}
-        <ProCard
-          colSpan={{ xs: 24, sm: 24, md: 14, xl: 8 }}
-          bordered
-          size="small"
-          className="shadow-2xs rounded-lg dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800"
-          bodyStyle={{ padding: '12px 14px' }}
-        >
-          <Flex wrap="wrap" align="center" gap={8} className="w-full">
+        <div className="flex-[1.8] min-w-[275px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+          <Flex align="center" gap={7} className="w-full">
             {/* GAP */}
-            <div className="flex-1 min-w-[70px] sm:min-w-[65px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[62px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <AppstoreOutlined className="text-slate-500" /> GAP
               </span>
@@ -330,7 +313,7 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
             </div>
 
             {/* CNT */}
-            <div className="flex-1 min-w-[55px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[48px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <NumberOutlined className="text-slate-500" /> CNT
               </span>
@@ -349,7 +332,7 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
             </div>
 
             {/* STK */}
-            <div className="flex-1 min-w-[65px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <BarChartOutlined className="text-slate-500" /> STK
               </span>
@@ -371,7 +354,7 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
             </div>
 
             {/* REF */}
-            <div className="flex-1 min-w-[65px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <FileTextOutlined className="text-slate-500" /> REF
               </span>
@@ -392,19 +375,13 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               />
             </div>
           </Flex>
-        </ProCard>
+        </div>
 
         {/* Card 3: MIN STRIKE & MAX STRIKE */}
-        <ProCard
-          colSpan={{ xs: 24, sm: 24, md: 12, xl: 6 }}
-          bordered
-          size="small"
-          className="shadow-2xs rounded-lg dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800"
-          bodyStyle={{ padding: '12px 14px' }}
-        >
-          <Flex align="center" gap={10} className="w-full">
+        <div className="flex-[1] min-w-[175px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+          <Flex align="center" gap={7} className="w-full">
             {/* MIN STRIKE */}
-            <div className="flex-1 min-w-[90px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[78px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <FilterOutlined className="text-slate-500" /> MIN STRIKE
               </span>
@@ -431,7 +408,7 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
             </div>
 
             {/* MAX STRIKE */}
-            <div className="flex-1 min-w-[90px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[78px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <FilterOutlined className="text-slate-500" /> MAX STRIKE
               </span>
@@ -457,19 +434,13 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               />
             </div>
           </Flex>
-        </ProCard>
+        </div>
 
         {/* Card 4: DENSITY, ROWS & GREEKS */}
-        <ProCard
-          colSpan={{ xs: 24, sm: 24, md: 12, xl: 6 }}
-          bordered
-          size="small"
-          className="shadow-2xs rounded-lg dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800"
-          bodyStyle={{ padding: '12px 14px' }}
-        >
-          <Flex align="center" gap={8} className="w-full">
+        <div className="flex-[1.5] min-w-[260px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+          <Flex align="center" gap={7} className="w-full">
             {/* DENSITY */}
-            <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <AppstoreOutlined className="text-slate-500" /> DENSITY
               </span>
@@ -481,14 +452,14 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
                 onChange={val => onChangeDensity(val)}
                 className="w-full font-sans text-xs"
                 options={[
-                  { label: 'Compact', value: 'compact' },
-                  { label: 'Comfortable', value: 'comfortable' }
+                  { label: 'Comfortable', value: 'comfortable' },
+                  { label: 'Compact', value: 'compact' }
                 ]}
               />
             </div>
 
-            {/* ROWS (Placed directly between DENSITY and GREEKS) */}
-            <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
+            {/* ROWS */}
+            <div className="flex-1 min-w-[60px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <UnorderedListOutlined className="text-slate-500" /> ROWS
               </span>
@@ -513,7 +484,7 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
             </div>
 
             {/* GREEKS */}
-            <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
+            <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
                 <SlidersOutlined className="text-slate-500" /> GREEKS
               </span>
@@ -535,8 +506,8 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               />
             </div>
           </Flex>
-        </ProCard>
-      </ProCard>
+        </div>
+      </div>
 
       {/* 3. BOTTOM INFO SUBSTRIP */}
       <div className="flex items-center flex-wrap gap-4 text-xs font-sans pt-2 border-t border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400">

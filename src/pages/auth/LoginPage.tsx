@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { authService } from '@/services/authService';
+import { marketDataFeed } from '@/services/marketDataFeed';
 import { UserProfile } from '@/shared/types';
 import { Form, Input, Button, Alert, Divider, Flex, Typography, Card } from 'antd';
 import {
@@ -27,6 +28,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpiredNotice] = useState<string | null>(() => {
+    try {
+      const msg = sessionStorage.getItem('ratio_spread_session_expired');
+      if (msg) {
+        sessionStorage.removeItem('ratio_spread_session_expired');
+        return msg;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
 
   const handleFinish = async (values: { email: string; password: string }) => {
     setIsLoading(true);
@@ -34,6 +47,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
     try {
       const { user } = await authService.login(values.email, values.password);
+      marketDataFeed.resetSessionExpired();
       onLoginSuccess(user);
     } catch (err: any) {
       setError(err?.message || 'Login failed. Please check your credentials.');
@@ -49,6 +63,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
     try {
       const { user } = await authService.login(demoEmail, demoPass);
+      marketDataFeed.resetSessionExpired();
       onLoginSuccess(user);
     } catch (err: any) {
       setError(err?.message || 'Demo login failed.');
@@ -79,6 +94,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
         {/* Form Card */}
         <Card className="!bg-white dark:!bg-slate-900 !border-slate-200 dark:!border-slate-800 !rounded-2xl !shadow-xl">
+          {sessionExpiredNotice && (
+            <Alert
+              message="Session Expired"
+              description={sessionExpiredNotice}
+              type="warning"
+              showIcon
+              closable
+              className="font-sans text-xs mb-4"
+            />
+          )}
+
           {error && (
             <Alert
               message={error}

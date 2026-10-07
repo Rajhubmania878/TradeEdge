@@ -327,23 +327,37 @@ var AngelSessionManager = class {
     this.refreshToken = null;
     this.lastLoginTime = 0;
     this.isLoggingIn = false;
+    this.lastLoginAttemptTime = 0;
+    this.minLoginIntervalMs = 3e4;
+    this.sessionExpired = false;
     this.credentials = { ...DEFAULT_CREDENTIALS };
   }
   isConnected() {
-    return Boolean(this.jwtToken && Date.now() - this.lastLoginTime < 18 * 60 * 60 * 1e3);
+    return Boolean(
+      this.jwtToken && !this.sessionExpired && Date.now() - this.lastLoginTime < 18 * 60 * 60 * 1e3
+    );
   }
-  async getValidJwt() {
-    if (!this.isConnected()) {
-      await this.login();
+  isSessionExpired() {
+    return this.sessionExpired;
+  }
+  getValidJwt() {
+    if (this.isConnected()) {
+      return this.jwtToken;
     }
-    return this.jwtToken;
+    return null;
   }
-  async login() {
+  async login(force = false) {
     if (this.isLoggingIn) {
-      await new Promise((resolve) => setTimeout(resolve, 1e3));
+      await new Promise((resolve) => setTimeout(resolve, 800));
       return Boolean(this.jwtToken);
     }
+    const now = Date.now();
+    if (!force && this.lastLoginAttemptTime > 0 && now - this.lastLoginAttemptTime < this.minLoginIntervalMs) {
+      console.warn(`[AngelOne] Login throttled: last attempt was ${Math.round((now - this.lastLoginAttemptTime) / 1e3)}s ago. Cooldown is 30s.`);
+      return false;
+    }
     this.isLoggingIn = true;
+    this.lastLoginAttemptTime = now;
     try {
       const totp = generateTOTP(this.credentials.totpSecret);
       const postData = JSON.stringify({
@@ -363,29 +377,41 @@ var AngelSessionManager = class {
           "X-MACAddress": "02-00-00-00-00-00",
           "X-PrivateKey": this.credentials.apiKey
         },
-        body: postData
+        body: postData,
+        signal: AbortSignal.timeout(8e3)
       });
-      const data = await res.json();
-      if (data.status && data.data?.jwtToken) {
+      const text = await res.text();
+      let data = null;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.warn(`[AngelOne] Login returned non-JSON response (${res.status}): ${text.slice(0, 80)}`);
+        this.sessionExpired = true;
+        return false;
+      }
+      if (data && data.status && data.data?.jwtToken) {
         this.jwtToken = data.data.jwtToken;
         this.feedToken = data.data.feedToken || null;
         this.refreshToken = data.data.refreshToken || null;
         this.lastLoginTime = Date.now();
+        this.sessionExpired = false;
         console.log("[AngelOne] Successfully logged in to SmartAPI.");
         return true;
       }
+      this.sessionExpired = true;
       return false;
     } catch (err) {
-      console.error("[AngelOne] Login error:", err);
+      console.warn("[AngelOne] Login attempt error:", err?.message || err);
+      this.sessionExpired = true;
       return false;
     } finally {
       this.isLoggingIn = false;
     }
   }
   async fetchQuote(exchange, tokens) {
-    let jwt = await this.getValidJwt();
+    const jwt = this.getValidJwt();
     if (!jwt) {
-      throw new Error("Unable to obtain valid SmartAPI session token");
+      return [];
     }
     const uniqueTokens = Array.from(new Set(tokens.filter((t) => Boolean(t && String(t).trim()))));
     if (uniqueTokens.length === 0) return [];
@@ -433,22 +459,25 @@ var AngelSessionManager = class {
           }
           if (!fetchRes) return;
           if (fetchRes.status === 401 || fetchRes.status === 403) {
+            console.warn(`[AngelOne] Quote fetch returned ${fetchRes.status}: Session expired.`);
             this.jwtToken = null;
-            jwt = await this.getValidJwt();
-            if (jwt) {
-              try {
-                fetchRes = await makeRequest(jwt, 8e3);
-              } catch {
-                fetchRes = null;
-              }
-            }
+            this.sessionExpired = true;
+            return;
           }
           if (fetchRes && fetchRes.ok) {
-            const data = await fetchRes.json();
-            if (data.status && Array.isArray(data.data?.fetched)) {
+            const rawText = await fetchRes.text();
+            let data = null;
+            try {
+              data = JSON.parse(rawText);
+            } catch {
+              data = null;
+            }
+            if (data && data.status && Array.isArray(data.data?.fetched)) {
               allFetched.push(...data.data.fetched);
-            } else if (data.errorcode === "AG8001" || data.message?.toLowerCase().includes("token")) {
+            } else if (data && (data.errorcode === "AG8001" || data.message?.toLowerCase().includes("token"))) {
+              console.warn("[AngelOne] SmartAPI token expired code AG8001.");
               this.jwtToken = null;
+              this.sessionExpired = true;
             }
           }
         } catch {
@@ -459,12 +488,19 @@ var AngelSessionManager = class {
   }
 };
 var angelSession = new AngelSessionManager();
+setTimeout(() => {
+  if (angelSession.credentials.apiKey && angelSession.credentials.clientCode) {
+    angelSession.login().catch(() => {
+    });
+  }
+}, 300);
 
 // server/modules/market/market.service.ts
 var MarketService = class {
   getStatus() {
     return {
       connected: angelSession.isConnected(),
+      sessionExpired: angelSession.isSessionExpired(),
       clientCode: angelSession.credentials.clientCode,
       lastLogin: angelSession.isConnected(),
       mode: angelSession.isConnected() ? "LIVE_SMARTAPI" : "SIMULATED"
@@ -545,16 +581,31 @@ var MarketController = class {
   }
   async getQuotes(req, res) {
     try {
+      const status = marketService.getStatus();
+      if (!status.connected || status.sessionExpired) {
+        return res.json({
+          success: true,
+          data: [],
+          connected: false,
+          sessionExpired: Boolean(status.sessionExpired),
+          simulatedFallback: true
+        });
+      }
       const quotes = await marketService.getQuotes(req.body);
+      const postStatus = marketService.getStatus();
       return res.json({
         success: true,
         data: quotes,
+        connected: postStatus.connected,
+        sessionExpired: Boolean(postStatus.sessionExpired),
         simulatedFallback: quotes.length === 0
       });
     } catch (err) {
       return res.json({
         success: true,
         data: [],
+        connected: false,
+        sessionExpired: true,
         error: err.message || "Quote fetch fallback triggered"
       });
     }

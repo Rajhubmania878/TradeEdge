@@ -4,6 +4,7 @@ export class MarketService {
   public getStatus() {
     return {
       connected: angelSession.isConnected(),
+      sessionExpired: angelSession.isSessionExpired(),
       clientCode: angelSession.credentials.clientCode,
       lastLogin: angelSession.isConnected(),
       mode: angelSession.isConnected() ? 'LIVE_SMARTAPI' : 'SIMULATED'

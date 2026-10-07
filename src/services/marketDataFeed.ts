@@ -44,6 +44,7 @@ class MarketDataFeedService {
 
   private isSimulated: boolean = false;
   private isStreaming: boolean = true;
+  private sessionExpired: boolean = false;
   private feedStatus: FeedStatus = 'LIVE';
   private lastTickTimestamp: number = Date.now();
   private simulationTimer: ReturnType<typeof setInterval> | null = null;
@@ -68,12 +69,64 @@ class MarketDataFeedService {
     this.initStockContracts(this.currentSymbol, this.currentExpiry, this.currentExchange);
     this.startMetricsLoop();
     this.setupVisibilityListener();
+    this.startSimulationStream();
 
     // Defer network supervisor probes slightly so initial React DOM mount is instantaneous
     setTimeout(() => {
-      this.startApiPolling();
       this.startConnectionSupervisor();
     }, 150);
+  }
+
+  public stopAllPolling(): void {
+    this.isStreaming = false;
+    this.isFetching = false;
+    if (this.apiPollTimer) {
+      clearInterval(this.apiPollTimer);
+      this.apiPollTimer = null;
+    }
+    if (this.simulationTimer) {
+      clearInterval(this.simulationTimer);
+      this.simulationTimer = null;
+    }
+    if (this.supervisorTimer) {
+      clearInterval(this.supervisorTimer);
+      this.supervisorTimer = null;
+    }
+    if (this.metricsTimer) {
+      clearInterval(this.metricsTimer);
+      this.metricsTimer = null;
+    }
+  }
+
+  public resetSessionExpired(): void {
+    this.sessionExpired = false;
+    this.isStreaming = true;
+    this.lastTickTimestamp = Date.now();
+    if (!this.simulationTimer && !this.apiPollTimer) {
+      this.startSimulationStream();
+    }
+    if (!this.supervisorTimer) {
+      this.startConnectionSupervisor();
+    }
+  }
+
+  private handleSessionExpired(reason: string = 'Session expired'): void {
+    if (this.sessionExpired) return;
+    this.sessionExpired = true;
+    console.warn(`[MarketDataFeed] Session expired: ${reason}. Stopping polling and redirecting to login screen.`);
+    this.stopAllPolling();
+
+    try {
+      sessionStorage.setItem('ratio_spread_session_expired', 'Your trading session has expired. Please log in again to continue.');
+    } catch {
+      // ignore
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('session-expired', {
+        detail: { reason, message: 'Your trading session has expired. Please log in again to continue.' }
+      }));
+    }
   }
 
   /**
@@ -82,12 +135,13 @@ class MarketDataFeedService {
    */
   private startConnectionSupervisor() {
     const checkConnection = async () => {
+      if (this.sessionExpired) return;
       if (this.tickCallbacks.size === 0 && this.metricsCallbacks.size === 0) return;
       try {
         const res = await fetch('/api/angel/status');
         if (res.ok) {
           const text = await res.text();
-          let data: { connected?: boolean; clientCode?: string } | null = null;
+          let data: { connected?: boolean; sessionExpired?: boolean; clientCode?: string } | null = null;
           try {
             data = JSON.parse(text);
           } catch {
@@ -111,6 +165,18 @@ class MarketDataFeedService {
               this.fetchLiveQuotes();
             }
             return;
+          } else {
+            // Live SmartAPI not connected -> seamlessly ensure realistic simulation stream is running
+            this.isSimulated = true;
+            this.feedStatus = 'LIVE';
+            if (this.apiPollTimer) {
+              clearInterval(this.apiPollTimer);
+              this.apiPollTimer = null;
+            }
+            if (!this.simulationTimer) {
+              this.startSimulationStream();
+            }
+            return;
           }
         }
       } catch {
@@ -118,8 +184,7 @@ class MarketDataFeedService {
       }
 
       // If server returned not connected, or during container spin-up, ensure continuous stream
-      const now = Date.now();
-      if (!this.simulationTimer && (!this.apiPollTimer || now - this.lastTickTimestamp > 3500)) {
+      if (!this.simulationTimer) {
         this.startSimulationStream();
       }
     };
@@ -218,10 +283,17 @@ class MarketDataFeedService {
         signal: AbortSignal.timeout(6000)
       });
 
+      if (res.status === 401 || res.status === 403) {
+        this.handleSessionExpired('Quote API returned unauthorized status');
+        return;
+      }
+
       if (res.ok) {
         const text = await res.text();
         let json: {
           success?: boolean;
+          sessionExpired?: boolean;
+          connected?: boolean;
           data?: Array<{
             symbolToken?: string | number;
             ltp?: number;
@@ -247,6 +319,11 @@ class MarketDataFeedService {
           this.lastTickTimestamp = Date.now();
           this.feedStatus = 'LIVE';
           this.runSimulationMicroTick();
+          return;
+        }
+
+        if (json?.sessionExpired) {
+          this.handleSessionExpired('Broker session expired flag received in quote response');
           return;
         }
 
@@ -370,7 +447,7 @@ class MarketDataFeedService {
     }
     // High-frequency polling every 1200ms
     this.apiPollTimer = setInterval(() => {
-      if (!this.isStreaming || this.isSimulated) return;
+      if (!this.isStreaming || this.isSimulated || this.sessionExpired) return;
       this.fetchLiveQuotes();
     }, 1200);
   }

@@ -7,26 +7,44 @@ export class AngelSessionManager {
   private refreshToken: string | null = null;
   private lastLoginTime: number = 0;
   private isLoggingIn: boolean = false;
+  private lastLoginAttemptTime: number = 0;
+  private minLoginIntervalMs: number = 30000;
+  private sessionExpired: boolean = false;
   public credentials = { ...DEFAULT_CREDENTIALS };
 
   public isConnected(): boolean {
-    return Boolean(this.jwtToken && Date.now() - this.lastLoginTime < 18 * 60 * 60 * 1000);
+    return Boolean(
+      this.jwtToken &&
+      !this.sessionExpired &&
+      Date.now() - this.lastLoginTime < 18 * 60 * 60 * 1000
+    );
   }
 
-  public async getValidJwt(): Promise<string | null> {
-    if (!this.isConnected()) {
-      await this.login();
+  public isSessionExpired(): boolean {
+    return this.sessionExpired;
+  }
+
+  public getValidJwt(): string | null {
+    if (this.isConnected()) {
+      return this.jwtToken;
     }
-    return this.jwtToken;
+    return null;
   }
 
-  public async login(): Promise<boolean> {
+  public async login(force = false): Promise<boolean> {
     if (this.isLoggingIn) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 800));
       return Boolean(this.jwtToken);
     }
 
+    const now = Date.now();
+    if (!force && this.lastLoginAttemptTime > 0 && now - this.lastLoginAttemptTime < this.minLoginIntervalMs) {
+      console.warn(`[AngelOne] Login throttled: last attempt was ${Math.round((now - this.lastLoginAttemptTime) / 1000)}s ago. Cooldown is 30s.`);
+      return false;
+    }
+
     this.isLoggingIn = true;
+    this.lastLoginAttemptTime = now;
     try {
       const totp = generateTOTP(this.credentials.totpSecret);
       const postData = JSON.stringify({
@@ -47,25 +65,40 @@ export class AngelSessionManager {
           'X-MACAddress': '02-00-00-00-00-00',
           'X-PrivateKey': this.credentials.apiKey
         },
-        body: postData
+        body: postData,
+        signal: AbortSignal.timeout(8000)
       });
 
-      const data = (await res.json()) as {
+      const text = await res.text();
+      let data: {
         status?: boolean;
+        message?: string;
         data?: { jwtToken?: string; feedToken?: string; refreshToken?: string };
-      };
+      } | null = null;
 
-      if (data.status && data.data?.jwtToken) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.warn(`[AngelOne] Login returned non-JSON response (${res.status}): ${text.slice(0, 80)}`);
+        this.sessionExpired = true;
+        return false;
+      }
+
+      if (data && data.status && data.data?.jwtToken) {
         this.jwtToken = data.data.jwtToken;
         this.feedToken = data.data.feedToken || null;
         this.refreshToken = data.data.refreshToken || null;
         this.lastLoginTime = Date.now();
+        this.sessionExpired = false;
         console.log('[AngelOne] Successfully logged in to SmartAPI.');
         return true;
       }
+
+      this.sessionExpired = true;
       return false;
-    } catch (err) {
-      console.error('[AngelOne] Login error:', err);
+    } catch (err: any) {
+      console.warn('[AngelOne] Login attempt error:', err?.message || err);
+      this.sessionExpired = true;
       return false;
     } finally {
       this.isLoggingIn = false;
@@ -73,9 +106,9 @@ export class AngelSessionManager {
   }
 
   public async fetchQuote(exchange: 'NSE' | 'NFO' | 'BSE' | 'BFO', tokens: string[]): Promise<unknown[]> {
-    let jwt = await this.getValidJwt();
+    const jwt = this.getValidJwt();
     if (!jwt) {
-      throw new Error('Unable to obtain valid SmartAPI session token');
+      return [];
     }
 
     const uniqueTokens = Array.from(new Set(tokens.filter(t => Boolean(t && String(t).trim()))));
@@ -117,11 +150,11 @@ export class AngelSessionManager {
 
           let fetchRes: globalThis.Response | null = null;
           try {
-            fetchRes = await makeRequest(jwt!);
+            fetchRes = await makeRequest(jwt);
           } catch {
             await new Promise(r => setTimeout(r, 200));
             try {
-              fetchRes = await makeRequest(jwt!, 10000);
+              fetchRes = await makeRequest(jwt, 10000);
             } catch {
               fetchRes = null;
             }
@@ -130,29 +163,32 @@ export class AngelSessionManager {
           if (!fetchRes) return;
 
           if (fetchRes.status === 401 || fetchRes.status === 403) {
+            console.warn(`[AngelOne] Quote fetch returned ${fetchRes.status}: Session expired.`);
             this.jwtToken = null;
-            jwt = await this.getValidJwt();
-            if (jwt) {
-              try {
-                fetchRes = await makeRequest(jwt, 8000);
-              } catch {
-                fetchRes = null;
-              }
-            }
+            this.sessionExpired = true;
+            return;
           }
 
           if (fetchRes && fetchRes.ok) {
-            const data = (await fetchRes.json()) as {
+            const rawText = await fetchRes.text();
+            let data: {
               status?: boolean;
               message?: string;
               errorcode?: string;
               data?: { fetched?: unknown[] };
-            };
+            } | null = null;
+            try {
+              data = JSON.parse(rawText);
+            } catch {
+              data = null;
+            }
 
-            if (data.status && Array.isArray(data.data?.fetched)) {
+            if (data && data.status && Array.isArray(data.data?.fetched)) {
               allFetched.push(...data.data.fetched);
-            } else if (data.errorcode === 'AG8001' || data.message?.toLowerCase().includes('token')) {
+            } else if (data && (data.errorcode === 'AG8001' || data.message?.toLowerCase().includes('token'))) {
+              console.warn('[AngelOne] SmartAPI token expired code AG8001.');
               this.jwtToken = null;
+              this.sessionExpired = true;
             }
           }
         } catch {
@@ -166,4 +202,12 @@ export class AngelSessionManager {
 }
 
 export const angelSession = new AngelSessionManager();
+
+// Attempt one initial background login on server start
+setTimeout(() => {
+  if (angelSession.credentials.apiKey && angelSession.credentials.clientCode) {
+    angelSession.login().catch(() => {});
+  }
+}, 300);
+
 export default angelSession;

@@ -17,6 +17,19 @@ class ApiClient {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
+      if (response.status === 401) {
+        try {
+          sessionStorage.setItem('ratio_spread_session_expired', 'Your session has expired. Please log in again to continue.');
+        } catch {
+          // ignore
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('session-expired', {
+            detail: { status: 401, message: 'Session expired' }
+          }));
+        }
+      }
+
       let errorMessage = `HTTP Error: ${response.status} ${response.statusText}`;
       try {
         const errorData = await response.json();
