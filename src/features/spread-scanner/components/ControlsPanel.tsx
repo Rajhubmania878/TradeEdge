@@ -8,7 +8,7 @@ import {
 } from '@/shared/types';
 import { ProCard } from '@ant-design/pro-components';
 import { StockSelectorDropdown } from '@/shared/components/inputs/StockSelectorDropdown';
-import { Select, Segmented, Button, Tooltip, Popover, InputNumber, Space, Flex, Divider } from 'antd';
+import { Select, Segmented, Button, Tooltip, Popover, InputNumber, Space, Flex, Divider, Radio } from 'antd';
 import { SwapOutlined, PlusOutlined, RiseOutlined, FallOutlined } from '@ant-design/icons';
 
 
@@ -187,34 +187,32 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         {/* ROW 1 - CARD A: Option Type & Direction Mode */}
         <ProCard colSpan={{ xs: 24, md: 8, xl: 8 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
           <Flex align="center" justify="space-between" gap={10} className="w-full">
-            <Segmented
-              block
+            <Radio.Group
+              size="middle"
               value={optionType}
-              onChange={val => onChangeOptionType(val as OptionType)}
-              className={`type-segmented-control shrink-0 ${
-                optionType === 'CE' ? 'segmented-ce' : 'segmented-pe'
-              }`}
-              options={[
-                {
-                  label: (
-                    <Space size={5} align="center">
-                      <RiseOutlined />
-                      <span>CE</span>
-                    </Space>
-                  ),
-                  value: 'CE'
-                },
-                {
-                  label: (
-                    <Space size={5} align="center">
-                      <FallOutlined />
-                      <span>PE</span>
-                    </Space>
-                  ),
-                  value: 'PE'
-                }
-              ]}
-            />
+              onChange={e => onChangeOptionType(e.target.value as OptionType)}
+              buttonStyle="solid"
+              className="flex font-sans"
+            >
+              <Radio.Button
+                value="CE"
+                className="ce-radio-button flex-1 text-center font-bold text-xs"
+              >
+                <Space size={3} align="center">
+                  <RiseOutlined />
+                  <span>CE</span>
+                </Space>
+              </Radio.Button>
+              <Radio.Button
+                value="PE"
+                className="pe-radio-button flex-1 text-center font-bold text-xs"
+              >
+                <Space size={3} align="center">
+                  <FallOutlined />
+                  <span>PE</span>
+                </Space>
+              </Radio.Button>
+            </Radio.Group>
 
             <Tooltip
               title={

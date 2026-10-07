@@ -199,21 +199,60 @@ div.rc-virtual-list-scrollbar-thumb:hover {
 }
 
 @keyframes flash-green {
-  0% { background-color: rgba(16, 185, 129, 0.35); }
+  0% { background-color: rgba(16, 185, 129, 0.45); }
+  50% { background-color: rgba(16, 185, 129, 0.22); }
   100% { background-color: transparent; }
 }
 
 @keyframes flash-red {
-  0% { background-color: rgba(244, 63, 94, 0.35); }
+  0% { background-color: rgba(244, 63, 94, 0.45); }
+  50% { background-color: rgba(244, 63, 94, 0.22); }
   100% { background-color: transparent; }
 }
 
 .tick-up {
-  animation: flash-green 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: flash-green 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .tick-down {
-  animation: flash-red 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: flash-red 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Ant Design Table Header & Sorter Polish */
+.ant-table-wrapper .ant-table-column-sorter {
+  margin-left: 6px !important;
+}
+
+.ant-table-wrapper .ant-table-column-sorter-up.active,
+.ant-table-wrapper .ant-table-column-sorter-down.active {
+  color: #2563eb !important; /* blue-600 */
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  padding: 10px 12px !important;
+  background-color: #f8fafc !important; /* bg-slate-50 */
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: #334155 !important; /* slate-700 */
+  transition: background-color 0.15s ease !important;
+}
+
+.dark .ant-table-wrapper .ant-table-thead > tr > th {
+  background-color: #0f172a !important; /* bg-slate-900 */
+  border-bottom-color: #1e293b !important;
+  color: #cbd5e1 !important; /* slate-300 */
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th:hover {
+  background-color: #f1f5f9 !important; /* bg-slate-100 */
+}
+
+.dark .ant-table-wrapper .ant-table-thead > tr > th:hover {
+  background-color: #1e293b !important; /* bg-slate-800 */
 }
 
 /* Ant Design Pro Layout Refinements & 100% Solid Non-Transparent Header */
@@ -494,115 +533,67 @@ td {
   border-bottom-right-radius: 0 !important;
 }
 
-/* Precision optical centering and alignment for Segmented control to match standard 32px controls */
-.ant-segmented {
-  align-items: center !important;
-  vertical-align: middle !important;
-  border-radius: 10px !important;
-  padding: 2px !important;
-}
-
-/* Ant Design Segmented Control with CE (Emerald Green) and PE (Rose Red) Active Themes */
-.type-segmented-control.ant-segmented {
-  background-color: rgba(241, 245, 249, 1) !important; /* light: bg-slate-100 */
-  padding: 3px !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+/* Ant Design Radio Button Group for CE (Emerald Green) and PE (Rose Red) */
+.ce-radio-button.ant-radio-button-wrapper,
+.pe-radio-button.ant-radio-button-wrapper {
   display: inline-flex !important;
-  max-width: 135px !important;
-  width: 100% !important;
-}
-
-.dark .type-segmented-control.ant-segmented {
-  background-color: rgba(15, 23, 42, 0.95) !important; /* dark: bg-slate-900 */
-  border-color: rgba(30, 41, 59, 0.8) !important;
-}
-
-.type-segmented-control .ant-segmented-group {
-  display: flex !important;
-  width: 100% !important;
-  align-items: center !important;
-}
-
-.type-segmented-control .ant-segmented-item {
-  border-radius: 8px !important;
-  transition: color 0.15s ease !important;
-  flex: 1 1 50% !important;
-  width: 50% !important;
-  text-align: center !important;
-}
-
-.type-segmented-control .ant-segmented-thumb {
-  border-radius: 8px !important;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.type-segmented-control .ant-segmented-item-label {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-  font-weight: 800 !important;
-  font-size: 12px !important;
-  line-height: 1.25 !important;
-  padding: 4px 6px !important;
-  color: #475569 !important; /* slate-600 */
-  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 100% !important;
+  height: 32px !important;
+  line-height: 30px !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  border-color: #cbd5e1 !important;
+  transition: all 0.2s ease !important;
 }
 
-.dark .type-segmented-control .ant-segmented-item-label {
-  color: #94a3b8 !important; /* slate-400 */
+.dark .ce-radio-button.ant-radio-button-wrapper,
+.dark .pe-radio-button.ant-radio-button-wrapper {
+  border-color: #334155 !important;
+  background-color: #0f172a !important;
 }
 
-/* CE Selected State: Solid Emerald Green Thumb */
-.type-segmented-control.segmented-ce .ant-segmented-thumb,
-.type-segmented-control.segmented-ce .ant-segmented-item-selected {
-  background-color: #059669 !important; /* emerald-600 */
-  box-shadow: 0 1px 3px rgba(5, 150, 105, 0.3) !important;
-}
-
-.dark .type-segmented-control.segmented-ce .ant-segmented-thumb,
-.dark .type-segmented-control.segmented-ce .ant-segmented-item-selected {
-  background-color: #10b981 !important; /* emerald-500 */
-}
-
-.type-segmented-control.segmented-ce .ant-segmented-item-selected .ant-segmented-item-label,
-.type-segmented-control.segmented-ce .ant-segmented-item-selected .ant-segmented-item-label * {
+.ce-radio-button.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
   color: #ffffff !important;
+  box-shadow: -1px 0 0 0 #059669 !important;
 }
 
-/* PE Selected State: Solid Rose Red Thumb */
-.type-segmented-control.segmented-pe .ant-segmented-thumb,
-.type-segmented-control.segmented-pe .ant-segmented-item-selected {
-  background-color: #e11d48 !important; /* rose-600 */
-  box-shadow: 0 1px 3px rgba(225, 29, 72, 0.3) !important;
-}
-
-.dark .type-segmented-control.segmented-pe .ant-segmented-thumb,
-.dark .type-segmented-control.segmented-pe .ant-segmented-item-selected {
-  background-color: #f43f5e !important; /* rose-500 */
-}
-
-.type-segmented-control.segmented-pe .ant-segmented-item-selected .ant-segmented-item-label,
-.type-segmented-control.segmented-pe .ant-segmented-item-selected .ant-segmented-item-label * {
+.dark .ce-radio-button.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
   color: #ffffff !important;
+  box-shadow: -1px 0 0 0 #10b981 !important;
 }
 
-/* Dual Selected State for Option Chain */
-.type-segmented-control.segmented-dual .ant-segmented-thumb,
-.type-segmented-control.segmented-dual .ant-segmented-item-selected {
-  background-color: #2563eb !important; /* blue-600 */
-  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3) !important;
-}
-
-.dark .type-segmented-control.segmented-dual .ant-segmented-thumb,
-.dark .type-segmented-control.segmented-dual .ant-segmented-item-selected {
-  background-color: #3b82f6 !important; /* blue-500 */
-}
-
-.type-segmented-control.segmented-dual .ant-segmented-item-selected .ant-segmented-item-label,
-.type-segmented-control.segmented-dual .ant-segmented-item-selected .ant-segmented-item-label * {
+.pe-radio-button.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background-color: #e11d48 !important;
+  border-color: #e11d48 !important;
   color: #ffffff !important;
+  box-shadow: -1px 0 0 0 #e11d48 !important;
+}
+
+.dark .pe-radio-button.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background-color: #f43f5e !important;
+  border-color: #f43f5e !important;
+  color: #ffffff !important;
+  box-shadow: -1px 0 0 0 #f43f5e !important;
+}
+
+.ce-radio-button.ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked) {
+  color: #475569 !important;
+}
+
+.dark .ce-radio-button.ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked) {
+  color: #94a3b8 !important;
+}
+
+.pe-radio-button.ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked) {
+  color: #475569 !important;
+}
+
+.dark .pe-radio-button.ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked) {
+  color: #94a3b8 !important;
 }
 
 .ant-segmented:not(.ant-segmented-block) {

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile } from '@/shared/types';
 import { authService } from '@/services/authService';
 import { marketDataFeed } from '@/services/marketDataFeed';
+import { notification } from 'antd';
 
 export type ViewMode =
   | 'LANDING'
@@ -58,7 +59,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const handleSessionExpired = (e: Event) => {
       const detail = (e as CustomEvent)?.detail;
-      console.warn('[AuthContext] Session expired detected. Redirecting to LOGIN viewMode:', detail?.message || 'Session expired');
+      const msg = detail?.message || 'Your session has expired due to inactivity or market feed refresh. Please log in again.';
+      console.warn('[AuthContext] Session expired detected. Redirecting to LOGIN viewMode:', msg);
+      
+      try {
+        sessionStorage.setItem('ratio_spread_session_expired', msg);
+      } catch {
+        // ignore
+      }
+
+      notification.warning({
+        message: 'Session Expired',
+        description: msg,
+        placement: 'topRight',
+        duration: 6
+      });
+
       authService.clearSession();
       setCurrentUser(null);
       setIsUniverseLoaded(false);

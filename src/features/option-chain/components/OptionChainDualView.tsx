@@ -1,8 +1,134 @@
 import React, { useState, useMemo } from 'react';
 import { OptionContract, OptionType, Exchange } from '@/shared/types';
 import { resolveTokenForExchange } from '@/data/universeManager';
-import { Segmented, Tag, Tooltip, Empty, Space, Typography } from 'antd';
+import { Segmented, Tag, Tooltip, Empty, Space, Typography, Radio } from 'antd';
 import { RiseOutlined, FallOutlined, EyeOutlined } from '@ant-design/icons';
+import { usePriceFlash } from '@/shared/hooks';
+
+interface OptionChainDualViewProps {
+  contracts: Map<string, OptionContract>;
+  strikes: number[];
+  currentSpot: number;
+  selectedSymbol: string;
+  selectedExpiry: string;
+  activeBuyStrike?: number;
+  activeSellStrike?: number;
+  onSelectStrike: (strike: number) => void;
+  exchange?: Exchange;
+}
+
+const formatPrice = (val: number | null | undefined): string => {
+  if (val === null || val === undefined) return '-';
+  return `₹${val.toFixed(2)}`;
+};
+
+const formatNumber = (val: number | null | undefined): string => {
+  if (val === null || val === undefined) return '-';
+  if (val >= 100000) return `${(val / 100000).toFixed(2)}L`;
+  if (val >= 1000) return `${(val / 1000).toFixed(1)}k`;
+  return val.toLocaleString('en-IN');
+};
+
+const OptionChainRow: React.FC<{
+  strike: number;
+  ce?: OptionContract;
+  pe?: OptionContract;
+  isAtm: boolean;
+  isBuy: boolean;
+  isSell: boolean;
+  isCallItm: boolean;
+  isPutItm: boolean;
+  viewFilter: 'DUAL' | 'CE' | 'PE';
+  onSelectStrike: (strike: number) => void;
+}> = React.memo(({ strike, ce, pe, isAtm, isBuy, isSell, isCallItm, isPutItm, viewFilter, onSelectStrike }) => {
+  const ceLtpFlash = usePriceFlash(ce?.ltp);
+  const peLtpFlash = usePriceFlash(pe?.ltp);
+
+  return (
+    <tr
+      onClick={() => onSelectStrike(strike)}
+      className={`cursor-pointer transition-colors duration-100 ${
+        isAtm
+          ? 'bg-amber-500/15 font-semibold'
+          : isBuy
+          ? 'bg-emerald-500/15 hover:bg-emerald-500/25 dark:bg-emerald-950/50 dark:hover:bg-emerald-950/70'
+          : isSell
+          ? 'bg-rose-500/15 hover:bg-rose-500/25 dark:bg-rose-950/50 dark:hover:bg-rose-950/70'
+          : 'hover:bg-slate-100 dark:hover:bg-slate-900 bg-white dark:bg-slate-950'
+      }`}
+    >
+      {/* Call Columns */}
+      {(viewFilter === 'DUAL' || viewFilter === 'CE') && (
+        <>
+          <td className={`py-2 px-3 text-right text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
+            {formatNumber(ce?.oi)}
+          </td>
+          <td className={`py-2 px-2.5 text-right text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
+            {formatNumber(ce?.volume)}
+          </td>
+          <td className={`py-2 px-2.5 text-right text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
+            {ce?.iv !== null && ce?.iv !== undefined ? `${ce.iv.toFixed(1)}%` : '-'}
+          </td>
+          <td className={`py-2 px-2.5 text-right text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
+            {ce?.delta !== null && ce?.delta !== undefined ? ce.delta.toFixed(2) : '-'}
+          </td>
+          <td className={`py-2 px-2.5 text-right font-medium text-emerald-700 dark:text-emerald-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
+            {formatPrice(ce?.bid)}
+          </td>
+          <td className={`py-2 px-2.5 text-right font-medium text-emerald-700 dark:text-emerald-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
+            {formatPrice(ce?.ask)}
+          </td>
+          <td className={`py-2 px-3 text-right font-bold text-slate-900 dark:text-white border-r-2 border-slate-300 dark:border-slate-700 ${ceLtpFlash} ${isCallItm ? 'bg-amber-500/10' : ''}`}>
+            {formatPrice(ce?.ltp)}
+          </td>
+        </>
+      )}
+
+      {/* Strike Column */}
+      <td className={`py-2 px-4 text-center font-bold border-r-2 border-slate-300 dark:border-slate-700 whitespace-nowrap min-w-[104px] shadow-[2px_0_6px_-1px_rgba(0,0,0,0.06)] ${
+        isAtm
+          ? 'bg-amber-500 text-slate-950 font-extrabold'
+          : 'bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white'
+      }`}>
+        <div className="flex items-center justify-center gap-1.5 font-mono">
+          <span>{strike.toLocaleString('en-IN')}</span>
+          {isAtm && (
+            <span className="text-[9px] bg-slate-950 text-amber-400 px-1 py-0.2 rounded font-bold font-mono">
+              ATM
+            </span>
+          )}
+        </div>
+      </td>
+
+      {/* Put Columns */}
+      {(viewFilter === 'DUAL' || viewFilter === 'PE') && (
+        <>
+          <td className={`py-2 px-3 text-left font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800/80 ${peLtpFlash} ${isPutItm ? 'bg-amber-500/10' : ''}`}>
+            {formatPrice(pe?.ltp)}
+          </td>
+          <td className={`py-2 px-2.5 text-left font-medium text-rose-700 dark:text-rose-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
+            {formatPrice(pe?.bid)}
+          </td>
+          <td className={`py-2 px-2.5 text-left font-medium text-rose-700 dark:text-rose-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
+            {formatPrice(pe?.ask)}
+          </td>
+          <td className={`py-2 px-2.5 text-left text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
+            {pe?.delta !== null && pe?.delta !== undefined ? pe.delta.toFixed(2) : '-'}
+          </td>
+          <td className={`py-2 px-2.5 text-left text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
+            {pe?.iv !== null && pe?.iv !== undefined ? `${pe.iv.toFixed(1)}%` : '-'}
+          </td>
+          <td className={`py-2 px-2.5 text-left text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
+            {formatNumber(pe?.volume)}
+          </td>
+          <td className={`py-2 px-3 text-left text-slate-600 dark:text-slate-400 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
+            {formatNumber(pe?.oi)}
+          </td>
+        </>
+      )}
+    </tr>
+  );
+});
 
 interface OptionChainDualViewProps {
   contracts: Map<string, OptionContract>;
@@ -96,41 +222,29 @@ export const OptionChainDualView: React.FC<OptionChainDualViewProps> = ({
 
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-500 dark:text-slate-400">View:</span>
-          <Segmented
+          <Radio.Group
+            size="middle"
             value={viewFilter}
-            onChange={val => setViewFilter(val as any)}
-            className={`type-segmented-control ${
-              viewFilter === 'CE'
-                ? 'segmented-ce'
-                : viewFilter === 'PE'
-                ? 'segmented-pe'
-                : 'segmented-dual'
-            }`}
-            options={[
-              {
-                label: 'Dual',
-                value: 'DUAL'
-              },
-              {
-                label: (
-                  <Space size={4} align="center">
-                    <RiseOutlined />
-                    <span>CE</span>
-                  </Space>
-                ),
-                value: 'CE'
-              },
-              {
-                label: (
-                  <Space size={4} align="center">
-                    <FallOutlined />
-                    <span>PE</span>
-                  </Space>
-                ),
-                value: 'PE'
-              }
-            ]}
-          />
+            onChange={e => setViewFilter(e.target.value)}
+            buttonStyle="solid"
+            className="flex font-sans"
+          >
+            <Radio.Button value="DUAL" className="flex-1 text-center font-bold text-xs">
+              Dual
+            </Radio.Button>
+            <Radio.Button value="CE" className="ce-radio-button flex-1 text-center font-bold text-xs">
+              <Space size={3} align="center">
+                <RiseOutlined />
+                <span>CE</span>
+              </Space>
+            </Radio.Button>
+            <Radio.Button value="PE" className="pe-radio-button flex-1 text-center font-bold text-xs">
+              <Space size={3} align="center">
+                <FallOutlined />
+                <span>PE</span>
+              </Space>
+            </Radio.Button>
+          </Radio.Group>
         </div>
       </div>
 
@@ -212,91 +326,19 @@ export const OptionChainDualView: React.FC<OptionChainDualViewProps> = ({
               const isPutItm = strike > currentSpot;
 
               return (
-                <tr
+                <OptionChainRow
                   key={strike}
-                  onClick={() => {
-                    onSelectStrike(strike);
-                  }}
-                  className={`cursor-pointer transition-colors duration-100 ${
-                    isAtm
-                      ? 'bg-amber-500/15 font-semibold'
-                      : isBuy
-                      ? 'bg-emerald-500/15 hover:bg-emerald-500/25 dark:bg-emerald-950/50 dark:hover:bg-emerald-950/70'
-                      : isSell
-                      ? 'bg-rose-500/15 hover:bg-rose-500/25 dark:bg-rose-950/50 dark:hover:bg-rose-950/70'
-                      : 'hover:bg-slate-100 dark:hover:bg-slate-900 bg-white dark:bg-slate-950'
-                  }`}
-                >
-                  {/* Call Columns */}
-                  {(viewFilter === 'DUAL' || viewFilter === 'CE') && (
-                    <>
-                      <td className={`py-2 px-3 text-right text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatNumber(ce?.oi)}
-                      </td>
-                      <td className={`py-2 px-2.5 text-right text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatNumber(ce?.volume)}
-                      </td>
-                      <td className={`py-2 px-2.5 text-right text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
-                        {ce?.iv !== null && ce?.iv !== undefined ? `${ce.iv.toFixed(1)}%` : '-'}
-                      </td>
-                      <td className={`py-2 px-2.5 text-right text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
-                        {ce?.delta !== null && ce?.delta !== undefined ? ce.delta.toFixed(2) : '-'}
-                      </td>
-                      <td className={`py-2 px-2.5 text-right font-medium text-emerald-700 dark:text-emerald-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatPrice(ce?.bid)}
-                      </td>
-                      <td className={`py-2 px-2.5 text-right font-medium text-emerald-700 dark:text-emerald-400 border-r border-slate-200 dark:border-slate-800/80 ${isCallItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatPrice(ce?.ask)}
-                      </td>
-                      <td className={`py-2 px-3 text-right font-bold text-slate-900 dark:text-white border-r-2 border-slate-300 dark:border-slate-700 ${isCallItm ? 'bg-amber-500/10' : ''}`}>
-                        {formatPrice(ce?.ltp)}
-                      </td>
-                    </>
-                  )}
-
-                  {/* Strike Column */}
-                  <td className={`py-2 px-4 text-center font-bold border-r-2 border-slate-300 dark:border-slate-700 whitespace-nowrap min-w-[104px] shadow-[2px_0_6px_-1px_rgba(0,0,0,0.06)] ${
-                    isAtm
-                      ? 'bg-amber-500 text-slate-950 font-extrabold'
-                      : 'bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white'
-                  }`}>
-                    <div className="flex items-center justify-center gap-1.5 font-mono">
-                      <span>{strike.toLocaleString('en-IN')}</span>
-                      {isAtm && (
-                        <span className="text-[9px] bg-slate-950 text-amber-400 px-1 py-0.2 rounded font-bold font-mono">
-                          ATM
-                        </span>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Put Columns */}
-                  {(viewFilter === 'DUAL' || viewFilter === 'PE') && (
-                    <>
-                      <td className={`py-2 px-3 text-left font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/10' : ''}`}>
-                        {formatPrice(pe?.ltp)}
-                      </td>
-                      <td className={`py-2 px-2.5 text-left font-medium text-rose-700 dark:text-rose-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatPrice(pe?.bid)}
-                      </td>
-                      <td className={`py-2 px-2.5 text-left font-medium text-rose-700 dark:text-rose-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatPrice(pe?.ask)}
-                      </td>
-                      <td className={`py-2 px-2.5 text-left text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
-                        {pe?.delta !== null && pe?.delta !== undefined ? pe.delta.toFixed(2) : '-'}
-                      </td>
-                      <td className={`py-2 px-2.5 text-left text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
-                        {pe?.iv !== null && pe?.iv !== undefined ? `${pe.iv.toFixed(1)}%` : '-'}
-                      </td>
-                      <td className={`py-2 px-2.5 text-left text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800/80 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatNumber(pe?.volume)}
-                      </td>
-                      <td className={`py-2 px-3 text-left text-slate-600 dark:text-slate-400 ${isPutItm ? 'bg-amber-500/5' : ''}`}>
-                        {formatNumber(pe?.oi)}
-                      </td>
-                    </>
-                  )}
-                </tr>
+                  strike={strike}
+                  ce={ce}
+                  pe={pe}
+                  isAtm={isAtm}
+                  isBuy={isBuy}
+                  isSell={isSell}
+                  isCallItm={isCallItm}
+                  isPutItm={isPutItm}
+                  viewFilter={viewFilter}
+                  onSelectStrike={onSelectStrike}
+                />
               );
             })}
           </tbody>

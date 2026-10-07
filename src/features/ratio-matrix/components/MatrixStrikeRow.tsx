@@ -1,6 +1,7 @@
 import React from 'react';
 import { RatioStrategyRow, OptionContract } from '@/shared/types';
 import { MatrixCellRenderer } from './MatrixCellRenderer';
+import { usePriceFlash } from '@/shared/hooks';
 
 interface MatrixCellData {
   targetGap: number;
@@ -47,6 +48,8 @@ export const MatrixStrikeRow: React.FC<MatrixStrikeRowProps> = React.memo(({
 }) => {
   const { strike, ltp, isAtm, isItm, cells } = row;
 
+  const ltpFlash = usePriceFlash(ltp);
+
   // Row background style
   let rowBgClass = isItm
     ? 'bg-slate-100/50 dark:bg-slate-900/40'
@@ -75,7 +78,7 @@ export const MatrixStrikeRow: React.FC<MatrixStrikeRowProps> = React.memo(({
       </td>
 
       {/* STICKY LTP COLUMN WITH PROMINENT FREEZE BOUNDARY DIVIDER */}
-      <td className={`sticky left-[104px] z-10 ${cellPy} px-3.5 text-right font-mono text-xs tabular-nums border-r-2 border-slate-300 dark:border-slate-700 transition-colors whitespace-nowrap min-w-[92px] shadow-[4px_0_8px_-2px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.6)] ${
+      <td className={`sticky left-[104px] z-10 ${cellPy} px-3.5 text-right font-mono text-xs tabular-nums border-r-2 border-slate-300 dark:border-slate-700 transition-colors whitespace-nowrap min-w-[92px] shadow-[4px_0_8px_-2px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.6)] ${ltpFlash} ${
         isAtm
           ? 'bg-amber-500/15 dark:bg-amber-500/25 text-amber-950 dark:text-amber-200 font-bold'
           : 'bg-slate-50/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 group-hover:bg-blue-100/50 dark:group-hover:bg-slate-800'

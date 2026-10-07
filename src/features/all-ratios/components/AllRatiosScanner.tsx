@@ -14,10 +14,85 @@ import {
   RiseOutlined,
   FallOutlined,
   EyeOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  InfoCircleOutlined,
+  CaretUpOutlined,
+  CaretDownOutlined
 } from '@ant-design/icons';
+import { usePriceFlash } from '@/shared/hooks';
 
 const { Text } = Typography;
+
+const renderSortIcon = ({ sortOrder }: { sortOrder?: 'ascend' | 'descend' | null }) => {
+  if (sortOrder === 'ascend') {
+    return (
+      <span className="inline-flex items-center gap-0.5 bg-blue-600 dark:bg-blue-500 text-white font-mono font-extrabold text-[10px] px-1.5 py-0.5 rounded shadow-2xs ml-1 select-none animate-in fade-in">
+        <CaretUpOutlined className="text-[9px]" />
+        <span>ASC</span>
+      </span>
+    );
+  }
+
+  if (sortOrder === 'descend') {
+    return (
+      <span className="inline-flex items-center gap-0.5 bg-blue-600 dark:bg-blue-500 text-white font-mono font-extrabold text-[10px] px-1.5 py-0.5 rounded shadow-2xs ml-1 select-none animate-in fade-in">
+        <CaretDownOutlined className="text-[9px]" />
+        <span>DESC</span>
+      </span>
+    );
+  }
+
+  return (
+    <span className="text-slate-400 dark:text-slate-500 text-[11px] font-mono hover:text-blue-500 transition-colors ml-1 select-none">
+      ⇅
+    </span>
+  );
+};
+
+const HeaderLabel: React.FC<{ title: string; tooltip?: string }> = React.memo(({ title, tooltip }) => (
+  <div className="inline-flex items-center gap-1 font-mono text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 select-none">
+    <span>{title}</span>
+    {tooltip && (
+      <Tooltip title={tooltip} placement="top" mouseEnterDelay={0.15}>
+        <InfoCircleOutlined
+          onClick={e => e.stopPropagation()}
+          className="text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors text-[11px] cursor-pointer ml-0.5"
+        />
+      </Tooltip>
+    )}
+  </div>
+));
+
+const NetEntryCell: React.FC<{ val: number | null }> = React.memo(({ val }) => {
+  const flash = usePriceFlash(val);
+  if (val === null) return <Text type="secondary">-</Text>;
+  const isCredit = val < 0;
+  const isDebit = val > 0;
+  return (
+    <div className={`font-mono tabular-nums whitespace-nowrap rounded px-1.5 py-0.5 inline-block transition-colors ${flash}`}>
+      <span className={`font-semibold ${isCredit ? 'text-emerald-600 dark:text-emerald-400' : isDebit ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-200'}`}>
+        {isCredit ? '+' : isDebit ? '-' : ''}₹{Math.abs(val).toFixed(2)}
+      </span>
+      <Text type="secondary" className="text-[11px] ml-1">
+        ({isCredit ? 'Credit' : 'Debit'})
+      </Text>
+    </div>
+  );
+});
+
+const MaxProfitCell: React.FC<{ val: number; lotSize: number }> = React.memo(({ val, lotSize }) => {
+  const flash = usePriceFlash(val);
+  return (
+    <div className={`font-mono tabular-nums text-right rounded px-1.5 py-0.5 inline-block transition-colors ${flash}`}>
+      <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+        +₹{val.toFixed(2)}
+      </span>
+      <span className="block text-[11px] text-slate-400">
+        +₹{(val * lotSize).toLocaleString('en-IN')}
+      </span>
+    </div>
+  );
+});
 
 interface AllRatiosScannerProps {
   stock: UnderlyingStock;
@@ -245,11 +320,13 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
 
   const columns: ColumnsType<RatioStrategyRow> = [
     {
-      title: 'Ratio',
+      title: <HeaderLabel title="Ratio" tooltip="Ratio spread structure (Long legs : Short legs)" />,
       dataIndex: 'ratioStr',
       key: 'ratioStr',
       align: 'left',
-      width: 85,
+      width: 110,
+      showSorterTooltip: { title: 'Sort by Ratio Spread Structure' },
+      sortIcon: renderSortIcon,
       render: text => (
         <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 rounded font-bold font-mono border border-blue-200 dark:border-blue-800 whitespace-nowrap">
           {text}
@@ -258,28 +335,34 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       sorter: (a, b) => a.ratioStr.localeCompare(b.ratioStr)
     },
     {
-      title: 'Buy Strike',
+      title: <HeaderLabel title="Buy Strike" tooltip="Strike price of the bought option leg (+Long)" />,
       dataIndex: 'buyStrike',
       key: 'buyStrike',
       align: 'left',
-      width: 100,
-      render: val => <span className="font-bold text-slate-900 dark:text-white tabular-nums">{val}</span>,
+      width: 125,
+      showSorterTooltip: { title: 'Sort by Buy Leg Strike Price' },
+      sortIcon: renderSortIcon,
+      render: val => <span className="font-bold text-slate-900 dark:text-white tabular-nums">₹{val}</span>,
       sorter: (a, b) => a.buyStrike - b.buyStrike
     },
     {
-      title: 'Sell Strike',
+      title: <HeaderLabel title="Sell Strike" tooltip="Strike price of the sold option leg (-Short)" />,
       dataIndex: 'sellStrike',
       key: 'sellStrike',
       align: 'left',
-      width: 100,
-      render: val => <span className="font-bold text-slate-800 dark:text-slate-200 tabular-nums">{val}</span>,
+      width: 125,
+      showSorterTooltip: { title: 'Sort by Sell Leg Strike Price' },
+      sortIcon: renderSortIcon,
+      render: val => <span className="font-bold text-slate-800 dark:text-slate-200 tabular-nums">₹{val}</span>,
       sorter: (a, b) => a.sellStrike - b.sellStrike
     },
     {
-      title: 'Actual Gap',
+      title: <HeaderLabel title="Actual Gap" tooltip="Point difference and exchange steps between Buy & Sell strikes" />,
       key: 'actualGap',
       align: 'left',
-      width: 120,
+      width: 135,
+      showSorterTooltip: { title: 'Sort by Strike Gap Distance' },
+      sortIcon: renderSortIcon,
       render: (_, r) => (
         <span className="text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">
           ₹{r.actualGap} ({r.gapSteps} steps)
@@ -288,56 +371,40 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       sorter: (a, b) => a.actualGap - b.actualGap
     },
     {
-      title: (
-        <Tooltip title="Executable Net Entry per share. Positive = Debit, Negative = Credit">
-          <span>Net Entry ℹ️</span>
-        </Tooltip>
-      ),
+      title: <HeaderLabel title="Net Entry" tooltip="Executable Net Entry per share. Negative = Net Credit received (+), Positive = Net Debit paid (-)" />,
       dataIndex: 'executableNetEntry',
       key: 'executableNetEntry',
       align: 'right',
-      width: 140,
-      render: (val: number | null) => {
-        if (val === null) return <Text type="secondary">-</Text>;
-        const isCredit = val < 0;
-        const isDebit = val > 0;
-        return (
-          <div className="font-mono tabular-nums whitespace-nowrap">
-            <span className={`font-semibold ${isCredit ? 'text-emerald-600 dark:text-emerald-400' : isDebit ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-200'}`}>
-              {isCredit ? '+' : isDebit ? '-' : ''}₹{Math.abs(val).toFixed(2)}
-            </span>
-            <Text type="secondary" className="text-[11px] ml-1">
-              ({isCredit ? 'Credit' : 'Debit'})
-            </Text>
-          </div>
-        );
-      },
+      width: 150,
+      showSorterTooltip: { title: 'Sort by Net Executable Entry Cost' },
+      sortIcon: renderSortIcon,
+      render: (val: number | null) => <NetEntryCell val={val} />,
       sorter: (a, b) => (a.executableNetEntry ?? 0) - (b.executableNetEntry ?? 0)
     },
     {
-      title: 'Max Profit',
+      title: <HeaderLabel title="Max Profit" tooltip="Maximum theoretical profit potential per share and per lot" />,
       dataIndex: 'maxProfitPerShare',
       key: 'maxProfitPerShare',
       align: 'right',
-      width: 130,
-      render: (val: number, r) => (
-        <div className="font-mono tabular-nums text-right">
-          <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-            +₹{val.toFixed(2)}
-          </span>
-          <span className="block text-[11px] text-slate-400">
-            +₹{(val * r.lotSize).toLocaleString('en-IN')}
-          </span>
-        </div>
-      ),
+      width: 145,
+      showSorterTooltip: { title: 'Sort by Maximum Profit Potential' },
+      sortIcon: renderSortIcon,
+      render: (val: number, r) => <MaxProfitCell val={val} lotSize={r.lotSize} />,
       sorter: (a, b) => a.maxProfitPerShare - b.maxProfitPerShare
     },
     {
-      title: 'Max Loss',
+      title: <HeaderLabel title="Max Loss" tooltip="Maximum risk per share or Unlimited loss notice at expiration" />,
       dataIndex: 'maxLossPerShare',
       key: 'maxLossPerShare',
       align: 'right',
-      width: 120,
+      width: 135,
+      showSorterTooltip: { title: 'Sort by Maximum Loss Risk' },
+      sortIcon: renderSortIcon,
+      sorter: (a, b) => {
+        const lossA = a.isUnlimitedLoss || a.maxLossPerShare === 'Unlimited' ? 999999 : Math.abs(typeof a.maxLossPerShare === 'number' ? a.maxLossPerShare : 0);
+        const lossB = b.isUnlimitedLoss || b.maxLossPerShare === 'Unlimited' ? 999999 : Math.abs(typeof b.maxLossPerShare === 'number' ? b.maxLossPerShare : 0);
+        return lossA - lossB;
+      },
       render: (val: number | 'Unlimited') => {
         if (val === 'Unlimited') {
           return (
@@ -354,11 +421,14 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       }
     },
     {
-      title: 'Breakeven(s)',
+      title: <HeaderLabel title="Breakeven(s)" tooltip="Underlying spot price level(s) where strategy P&L is exactly ₹0 at expiration" />,
       dataIndex: 'breakevens',
       key: 'breakevens',
       align: 'center',
-      width: 130,
+      width: 145,
+      showSorterTooltip: { title: 'Sort by Lower Breakeven Price' },
+      sortIcon: renderSortIcon,
+      sorter: (a, b) => (a.breakevens[0] || 0) - (b.breakevens[0] || 0),
       render: (bes: number[]) => {
         if (bes.length === 0) return <Text type="secondary">-</Text>;
         return (
@@ -369,11 +439,13 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       }
     },
     {
-      title: 'Open Interest',
+      title: <HeaderLabel title="Open Interest" tooltip="Combined Open Interest across both legs" />,
       dataIndex: 'combinedOi',
       key: 'combinedOi',
       align: 'right',
-      width: 120,
+      width: 140,
+      showSorterTooltip: { title: 'Sort by Total Open Interest' },
+      sortIcon: renderSortIcon,
       render: (val: number) => (
         <span className="font-mono text-slate-600 dark:text-slate-400 tabular-nums">
           {val.toLocaleString('en-IN')}
@@ -382,11 +454,13 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       sorter: (a, b) => (a.combinedOi || 0) - (b.combinedOi || 0)
     },
     {
-      title: 'Volume',
+      title: <HeaderLabel title="Volume" tooltip="Combined trading volume across both legs" />,
       dataIndex: 'combinedVolume',
       key: 'combinedVolume',
       align: 'right',
-      width: 110,
+      width: 130,
+      showSorterTooltip: { title: 'Sort by Total Trading Volume' },
+      sortIcon: renderSortIcon,
       render: (val: number) => (
         <span className="font-mono text-slate-600 dark:text-slate-400 tabular-nums">
           {val.toLocaleString('en-IN')}
@@ -395,7 +469,7 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
       sorter: (a, b) => (a.combinedVolume || 0) - (b.combinedVolume || 0)
     },
     {
-      title: 'Action',
+      title: <HeaderLabel title="Action" />,
       key: 'action',
       align: 'center',
       width: 90,

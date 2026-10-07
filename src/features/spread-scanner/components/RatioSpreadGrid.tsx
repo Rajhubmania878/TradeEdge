@@ -2,6 +2,7 @@ import React from 'react';
 import { RatioStrategyRow } from '@/shared/types';
 import { EyeOutlined, RiseOutlined, FallOutlined } from '@ant-design/icons';
 import { Empty, Tooltip } from 'antd';
+import { usePriceFlash } from '@/shared/hooks';
 
 interface RatioSpreadGridProps {
   rows: RatioStrategyRow[];
@@ -33,6 +34,10 @@ const RatioSpreadGridRow = React.memo<RatioSpreadGridRowProps>(({
   const buyDistPct = Math.round(((row.buyStrike - currentSpot) / currentSpot) * 1000) / 10;
   const isAtm = Math.abs(row.buyStrike - currentSpot) < 15;
 
+  const buyAskFlash = usePriceFlash(row.buyAsk);
+  const sellBidFlash = usePriceFlash(row.sellBid);
+  const netEntryFlash = usePriceFlash(row.executableNetEntry);
+
   return (
     <tr
       onClick={() => onSelectRow(row)}
@@ -63,7 +68,7 @@ const RatioSpreadGridRow = React.memo<RatioSpreadGridRowProps>(({
       </td>
 
       {/* 2. Buy Ask / Bid Depth (Right-aligned) */}
-      <td className="py-2.5 px-3.5 border-r border-slate-200 dark:border-slate-800/80 text-right whitespace-nowrap">
+      <td className={`py-2.5 px-3.5 border-r border-slate-200 dark:border-slate-800/80 text-right whitespace-nowrap ${buyAskFlash}`}>
         <div className="flex items-center justify-end gap-1.5 tabular-nums">
           <span className="text-emerald-600 dark:text-emerald-300 font-bold text-xs">
             Ask: {formatCurrency(row.buyAsk)}
@@ -93,7 +98,7 @@ const RatioSpreadGridRow = React.memo<RatioSpreadGridRowProps>(({
       </td>
 
       {/* 4. Sell Bid / Ask Depth (Right-aligned) */}
-      <td className="py-2.5 px-3.5 border-r border-slate-200 dark:border-slate-800/80 text-right whitespace-nowrap">
+      <td className={`py-2.5 px-3.5 border-r border-slate-200 dark:border-slate-800/80 text-right whitespace-nowrap ${sellBidFlash}`}>
         <div className="flex items-center justify-end gap-1.5 tabular-nums">
           <span className="text-rose-600 dark:text-rose-300 font-bold text-xs">
             Bid: {formatCurrency(row.sellBid)}
@@ -118,7 +123,7 @@ const RatioSpreadGridRow = React.memo<RatioSpreadGridRowProps>(({
       </td>
 
       {/* 6. Net Executable Entry (Right-aligned with tabular numerals) */}
-      <td className="py-3 px-3.5 text-right border-r border-slate-200 dark:border-slate-800/80 whitespace-nowrap">
+      <td className={`py-3 px-3.5 text-right border-r border-slate-200 dark:border-slate-800/80 whitespace-nowrap ${netEntryFlash}`}>
         {row.executableNetEntry === null ? (
           <span className="text-slate-400 dark:text-slate-500">-</span>
         ) : (

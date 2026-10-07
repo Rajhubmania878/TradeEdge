@@ -1,5 +1,6 @@
 import React from 'react';
 import { RatioStrategyRow, OptionContract } from '@/shared/types';
+import { usePriceFlash } from '@/shared/hooks';
 
 interface MatrixCellData {
   targetGap: number;
@@ -53,12 +54,15 @@ export const MatrixCellRenderer: React.FC<MatrixCellRendererProps> = React.memo(
 
   const isSelected = selectedStrategyId && strategyRow?.id === selectedStrategyId;
 
+  const buyCellFlash = usePriceFlash(netEntryBuy);
+  const sellCellFlash = usePriceFlash(sellBid);
+
   return (
     <React.Fragment>
       {/* BUY CELL (Executable Net Entry) */}
       <td
         onClick={() => strategyRow && onSelectStrategy(strategyRow)}
-        className={`${cellPy} ${cellPx} text-right cursor-pointer transition-colors border-r border-slate-200/80 dark:border-slate-800/80 whitespace-nowrap ${groupBgClass} ${
+        className={`${cellPy} ${cellPx} text-right cursor-pointer transition-colors border-r border-slate-200/80 dark:border-slate-800/80 whitespace-nowrap ${groupBgClass} ${buyCellFlash} ${
           isSelected
             ? 'bg-blue-500/15 ring-2 ring-inset ring-blue-500 text-slate-900 dark:text-white font-bold'
             : 'hover:bg-emerald-500/10'
@@ -98,7 +102,7 @@ export const MatrixCellRenderer: React.FC<MatrixCellRendererProps> = React.memo(
       {/* SELL CELL WITH DISTINCT 2px GAP GROUP BOUNDARY */}
       <td
         onClick={() => strategyRow && onSelectStrategy(strategyRow)}
-        className={`${cellPy} ${cellPx} text-right cursor-pointer transition-colors whitespace-nowrap ${groupBgClass} ${
+        className={`${cellPy} ${cellPx} text-right cursor-pointer transition-colors whitespace-nowrap ${groupBgClass} ${sellCellFlash} ${
           showAdvancedData
             ? 'border-r border-slate-200 dark:border-slate-800'
             : 'border-r-2 border-slate-300 dark:border-slate-700'

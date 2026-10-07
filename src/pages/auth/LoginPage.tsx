@@ -6,7 +6,9 @@ import { Form, Input, Button, Alert, Divider, Flex, Typography, Card } from 'ant
 import {
   LockOutlined,
   MailOutlined,
-  ArrowRightOutlined
+  ArrowRightOutlined,
+  ClockCircleOutlined,
+  WarningFilled
 } from '@ant-design/icons';
 import { AuthLayout } from '@/app/layouts';
 import { TradeEdgeLogo } from '@/shared/components/branding/TradeEdgeLogo';
@@ -29,7 +31,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sessionExpiredNotice] = useState<string | null>(() => {
+  const [sessionExpiredNotice, setSessionExpiredNotice] = useState<string | null>(() => {
     try {
       const msg = sessionStorage.getItem('ratio_spread_session_expired');
       if (msg) {
@@ -99,12 +101,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         <Card className="!bg-white dark:!bg-slate-900 !border-slate-200 dark:!border-slate-800 !rounded-2xl !shadow-xl">
           {sessionExpiredNotice && (
             <Alert
-              title="Session Expired"
-              description={sessionExpiredNotice}
+              message={
+                <Flex align="center" justify="space-between" className="w-full font-sans">
+                  <span className="font-bold text-slate-900 dark:text-amber-100 text-xs uppercase tracking-wider font-mono">
+                    Session Expired
+                  </span>
+                  <span className="text-[10px] bg-amber-200/60 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded font-mono font-extrabold">
+                    TIMEOUT
+                  </span>
+                </Flex>
+              }
+              description={
+                <p className="text-xs text-slate-700 dark:text-slate-300 font-sans mt-1.5 leading-relaxed">
+                  {sessionExpiredNotice}
+                </p>
+              }
               type="warning"
               showIcon
+              icon={<ClockCircleOutlined className="text-amber-500 text-base" />}
               closable
-              className="font-sans text-xs mb-4"
+              onClose={() => setSessionExpiredNotice(null)}
+              className="!bg-amber-50/90 dark:!bg-amber-950/40 !border-amber-200/80 dark:!border-amber-800/80 !rounded-xl mb-5 shadow-xs"
             />
           )}
 

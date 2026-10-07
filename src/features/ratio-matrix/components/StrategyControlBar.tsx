@@ -6,7 +6,7 @@ import {
   ReferenceStrikeMode,
   SavedPreset
 } from '@/shared/types';
-import { Select, Button, Tooltip, Popover, InputNumber, Flex, Tag, Typography, message, Segmented, Space } from 'antd';
+import { Select, Button, Tooltip, Popover, InputNumber, Flex, Tag, Typography, message, Segmented, Space, Radio } from 'antd';
 import {
   ReloadOutlined,
   SaveOutlined,
@@ -248,51 +248,49 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
       </div>
 
       {/* 2. PARAMETER MATRIX (Structured 2-Row Layout Architecture) */}
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-2.5 w-full">
         {/* ROW 1: PRIMARY STRATEGY & MATRIX DEPTH */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 w-full">
           {/* Card 1: TYPE, MODE & REF */}
-          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-            <Flex align="center" gap={8} className="w-full">
+          <div className="rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-950/40 p-2.5 flex flex-col justify-center transition-colors">
+            <Flex align="center" gap={10} className="w-full">
               {/* TYPE (CE / PE) */}
-              <div className="flex-1 min-w-[110px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <ThunderboltOutlined className="text-slate-500" /> TYPE
+              <div className="shrink-0 w-[125px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <ThunderboltOutlined /> TYPE
                 </span>
-                <Segmented
-                  block
+                <Radio.Group
+                  size="middle"
                   value={optionType}
-                  onChange={val => onChangeOptionType(val as OptionType)}
-                  className={`type-segmented-control shrink-0 ${
-                    optionType === 'CE' ? 'segmented-ce' : 'segmented-pe'
-                  }`}
-                  options={[
-                    {
-                      label: (
-                        <Space size={5} align="center">
-                          <RiseOutlined />
-                          <span>CE</span>
-                        </Space>
-                      ),
-                      value: 'CE'
-                    },
-                    {
-                      label: (
-                        <Space size={5} align="center">
-                          <FallOutlined />
-                          <span>PE</span>
-                        </Space>
-                      ),
-                      value: 'PE'
-                    }
-                  ]}
-                />
+                  onChange={e => onChangeOptionType(e.target.value as OptionType)}
+                  buttonStyle="solid"
+                  className="w-full flex font-sans"
+                >
+                  <Radio.Button
+                    value="CE"
+                    className="ce-radio-button flex-1 text-center font-bold text-xs"
+                  >
+                    <Space size={3} align="center">
+                      <RiseOutlined />
+                      <span>CE</span>
+                    </Space>
+                  </Radio.Button>
+                  <Radio.Button
+                    value="PE"
+                    className="pe-radio-button flex-1 text-center font-bold text-xs"
+                  >
+                    <Space size={3} align="center">
+                      <FallOutlined />
+                      <span>PE</span>
+                    </Space>
+                  </Radio.Button>
+                </Radio.Group>
               </div>
 
               {/* MODE */}
-              <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <SettingOutlined className="text-slate-500" /> MODE
+              <div className="flex-1 min-w-[85px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <SettingOutlined /> MODE
                 </span>
                 <Select
                   size="middle"
@@ -307,9 +305,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               </div>
 
               {/* REF */}
-              <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <FileTextOutlined className="text-slate-500" /> REF
+              <div className="flex-1 min-w-[75px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <FileTextOutlined /> REF
                 </span>
                 <Select
                   size="middle"
@@ -331,12 +329,12 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
           </div>
 
           {/* Card 2: GAP, CNT & STK */}
-          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-            <Flex align="center" gap={7} className="w-full">
+          <div className="rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-950/40 p-2.5 flex flex-col justify-center transition-colors">
+            <Flex align="center" gap={8} className="w-full">
               {/* GAP */}
-              <div className="flex-1 min-w-[65px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <AppstoreOutlined className="text-slate-500" /> GAP
+              <div className="flex-1 min-w-[65px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <AppstoreOutlined /> GAP
                 </span>
                 <Select
                   size="middle"
@@ -350,9 +348,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               </div>
 
               {/* CNT */}
-              <div className="flex-1 min-w-[50px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <NumberOutlined className="text-slate-500" /> CNT
+              <div className="flex-1 min-w-[55px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <NumberOutlined /> CNT
                 </span>
                 <Select
                   size="middle"
@@ -369,9 +367,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               </div>
 
               {/* STK */}
-              <div className="flex-1 min-w-[60px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <BarChartOutlined className="text-slate-500" /> STK
+              <div className="flex-1 min-w-[65px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <BarChartOutlined /> STK
                 </span>
                 <Select
                   size="middle"
@@ -394,14 +392,14 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
         </div>
 
         {/* ROW 2: STRIKE FILTERS & DISPLAY SETTINGS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 w-full">
           {/* Card 3: MIN STRIKE & MAX STRIKE */}
-          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-            <Flex align="center" gap={7} className="w-full">
+          <div className="rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-950/40 p-2.5 flex flex-col justify-center transition-colors">
+            <Flex align="center" gap={8} className="w-full">
               {/* MIN STRIKE */}
-              <div className="flex-1 min-w-[80px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <FilterOutlined className="text-slate-500" /> MIN STRIKE
+              <div className="flex-1 min-w-[80px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <FilterOutlined /> MIN STRIKE
                 </span>
                 <Select
                   size="middle"
@@ -426,9 +424,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               </div>
 
               {/* MAX STRIKE */}
-              <div className="flex-1 min-w-[80px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <FilterOutlined className="text-slate-500" /> MAX STRIKE
+              <div className="flex-1 min-w-[80px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <FilterOutlined /> MAX STRIKE
                 </span>
                 <Select
                   size="middle"
@@ -455,12 +453,12 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
           </div>
 
           {/* Card 4: DENSITY, ROWS & GREEKS */}
-          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-            <Flex align="center" gap={7} className="w-full">
+          <div className="rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-950/40 p-2.5 flex flex-col justify-center transition-colors">
+            <Flex align="center" gap={8} className="w-full">
               {/* DENSITY */}
-              <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <AppstoreOutlined className="text-slate-500" /> DENSITY
+              <div className="flex-1 min-w-[85px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <AppstoreOutlined /> DENSITY
                 </span>
                 <Select
                   size="middle"
@@ -477,9 +475,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               </div>
 
               {/* ROWS */}
-              <div className="flex-1 min-w-[60px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <UnorderedListOutlined className="text-slate-500" /> ROWS
+              <div className="flex-1 min-w-[60px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <UnorderedListOutlined /> ROWS
                 </span>
                 <Select
                   size="middle"
@@ -502,9 +500,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
               </div>
 
               {/* GREEKS */}
-              <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                  <SlidersOutlined className="text-slate-500" /> GREEKS
+              <div className="flex-1 min-w-[58px] flex flex-col gap-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 truncate">
+                  <SlidersOutlined /> GREEKS
                 </span>
                 <Select
                   size="middle"
