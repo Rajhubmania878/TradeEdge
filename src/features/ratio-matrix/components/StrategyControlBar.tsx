@@ -247,278 +247,284 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
         </div>
       </div>
 
-      {/* 2. PARAMETER MATRIX (4 Clean Cards in a Single Row) */}
-      <div className="flex flex-nowrap items-stretch gap-2 w-full overflow-x-auto pb-0.5">
-        {/* Card 1: TYPE & MODE */}
-        <div className="flex-[1] min-w-[185px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-          <Flex align="center" gap={8} className="w-full">
-            {/* TYPE (CE / PE) */}
-            <div className="flex-1 flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <ThunderboltOutlined className="text-slate-500" /> TYPE
-              </span>
-              <Segmented
-                block
-                value={optionType}
-                onChange={val => onChangeOptionType(val as OptionType)}
-                className={`type-segmented-control w-full ${
-                  optionType === 'CE' ? 'segmented-ce' : 'segmented-pe'
-                }`}
-                options={[
-                  {
-                    label: (
-                      <Space size={6} align="center">
-                        <RiseOutlined />
-                        <span>CE</span>
-                      </Space>
-                    ),
-                    value: 'CE'
-                  },
-                  {
-                    label: (
-                      <Space size={6} align="center">
-                        <FallOutlined />
-                        <span>PE</span>
-                      </Space>
-                    ),
-                    value: 'PE'
-                  }
-                ]}
-              />
-            </div>
+      {/* 2. PARAMETER MATRIX (Structured 2-Row Layout Architecture) */}
+      <div className="flex flex-col gap-2 w-full">
+        {/* ROW 1: PRIMARY STRATEGY & MATRIX DEPTH */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+          {/* Card 1: TYPE, MODE & REF */}
+          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+            <Flex align="center" gap={8} className="w-full">
+              {/* TYPE (CE / PE) */}
+              <div className="flex-1 min-w-[110px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <ThunderboltOutlined className="text-slate-500" /> TYPE
+                </span>
+                <Segmented
+                  block
+                  value={optionType}
+                  onChange={val => onChangeOptionType(val as OptionType)}
+                  className={`type-segmented-control shrink-0 ${
+                    optionType === 'CE' ? 'segmented-ce' : 'segmented-pe'
+                  }`}
+                  options={[
+                    {
+                      label: (
+                        <Space size={5} align="center">
+                          <RiseOutlined />
+                          <span>CE</span>
+                        </Space>
+                      ),
+                      value: 'CE'
+                    },
+                    {
+                      label: (
+                        <Space size={5} align="center">
+                          <FallOutlined />
+                          <span>PE</span>
+                        </Space>
+                      ),
+                      value: 'PE'
+                    }
+                  ]}
+                />
+              </div>
 
-            {/* MODE */}
-            <div className="flex-1 flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <SettingOutlined className="text-slate-500" /> MODE
-              </span>
-              <Select
-                size="middle"
-                value={direction}
-                onChange={val => onChangeDirection(val)}
-                className="w-full font-sans text-xs"
-                options={[
-                  { label: 'NORMAL', value: 'NORMAL' },
-                  { label: 'INVERTED', value: 'INVERTED' }
-                ]}
-              />
-            </div>
-          </Flex>
+              {/* MODE */}
+              <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <SettingOutlined className="text-slate-500" /> MODE
+                </span>
+                <Select
+                  size="middle"
+                  value={direction}
+                  onChange={val => onChangeDirection(val)}
+                  className="w-full font-sans text-xs"
+                  options={[
+                    { label: 'NORMAL', value: 'NORMAL' },
+                    { label: 'INVERTED', value: 'INVERTED' }
+                  ]}
+                />
+              </div>
+
+              {/* REF */}
+              <div className="flex-1 min-w-[70px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <FileTextOutlined className="text-slate-500" /> REF
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={referenceMode}
+                  onChange={val => onChangeReferenceMode(val)}
+                  options={[
+                    { label: `ATM`, value: 'ATM' },
+                    { label: '+1 OTM', value: 'ATM_PLUS_1' },
+                    { label: '-1 ITM', value: 'ATM_MINUS_1' },
+                    { label: '+2 OTM', value: 'ATM_PLUS_2' },
+                    { label: '-2 ITM', value: 'ATM_MINUS_2' }
+                  ]}
+                  className="w-full font-sans text-xs"
+                />
+              </div>
+            </Flex>
+          </div>
+
+          {/* Card 2: GAP, CNT & STK */}
+          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+            <Flex align="center" gap={7} className="w-full">
+              {/* GAP */}
+              <div className="flex-1 min-w-[65px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <AppstoreOutlined className="text-slate-500" /> GAP
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={gap}
+                  onChange={val => onChangeGap(val)}
+                  options={suggestedGaps.map(g => ({ label: `₹${g}`, value: g }))}
+                  className="w-full font-sans text-xs"
+                />
+              </div>
+
+              {/* CNT */}
+              <div className="flex-1 min-w-[50px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <NumberOutlined className="text-slate-500" /> CNT
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={cnt}
+                  onChange={val => onChangeCnt(val)}
+                  options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20].map(c => ({
+                    label: `${c}`,
+                    value: c
+                  }))}
+                  className="w-full font-sans text-xs"
+                />
+              </div>
+
+              {/* STK */}
+              <div className="flex-1 min-w-[60px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <BarChartOutlined className="text-slate-500" /> STK
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={stk}
+                  onChange={val => onChangeStk(val)}
+                  options={[
+                    { label: `AUTO`, value: 'AUTO' },
+                    ...[10, 20, 25, 50, 100, 250, 500].map(s => ({
+                      label: `₹${s}`,
+                      value: s
+                    }))
+                  ]}
+                  className="w-full font-sans text-xs"
+                />
+              </div>
+            </Flex>
+          </div>
         </div>
 
-        {/* Card 2: GAP, CNT, STK, REF */}
-        <div className="flex-[1.8] min-w-[275px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-          <Flex align="center" gap={7} className="w-full">
-            {/* GAP */}
-            <div className="flex-1 min-w-[62px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <AppstoreOutlined className="text-slate-500" /> GAP
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={gap}
-                onChange={val => onChangeGap(val)}
-                options={suggestedGaps.map(g => ({ label: `₹${g}`, value: g }))}
-                className="w-full font-sans text-xs"
-              />
-            </div>
+        {/* ROW 2: STRIKE FILTERS & DISPLAY SETTINGS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+          {/* Card 3: MIN STRIKE & MAX STRIKE */}
+          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+            <Flex align="center" gap={7} className="w-full">
+              {/* MIN STRIKE */}
+              <div className="flex-1 min-w-[80px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <FilterOutlined className="text-slate-500" /> MIN STRIKE
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={minStrike}
+                  onChange={val => {
+                    onChangeMinStrike(val);
+                    if (val !== 'ALL' && maxStrike !== 'ALL' && typeof val === 'number' && typeof maxStrike === 'number' && val > maxStrike) {
+                      onChangeMaxStrike('ALL');
+                    }
+                  }}
+                  className="w-full font-sans text-xs"
+                  options={[
+                    { label: 'ALL', value: 'ALL' },
+                    ...allStrikes.map(s => ({
+                      label: `₹${s}`,
+                      value: s
+                    }))
+                  ]}
+                />
+              </div>
 
-            {/* CNT */}
-            <div className="flex-1 min-w-[48px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <NumberOutlined className="text-slate-500" /> CNT
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={cnt}
-                onChange={val => onChangeCnt(val)}
-                options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20].map(c => ({
-                  label: `${c}`,
-                  value: c
-                }))}
-                className="w-full font-sans text-xs"
-              />
-            </div>
+              {/* MAX STRIKE */}
+              <div className="flex-1 min-w-[80px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <FilterOutlined className="text-slate-500" /> MAX STRIKE
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={maxStrike}
+                  onChange={val => {
+                    onChangeMaxStrike(val);
+                    if (val !== 'ALL' && minStrike !== 'ALL' && typeof val === 'number' && typeof minStrike === 'number' && val < minStrike) {
+                      onChangeMinStrike('ALL');
+                    }
+                  }}
+                  className="w-full font-sans text-xs"
+                  options={[
+                    { label: 'ALL', value: 'ALL' },
+                    ...allStrikes.map(s => ({
+                      label: `₹${s}`,
+                      value: s
+                    }))
+                  ]}
+                />
+              </div>
+            </Flex>
+          </div>
 
-            {/* STK */}
-            <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <BarChartOutlined className="text-slate-500" /> STK
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={stk}
-                onChange={val => onChangeStk(val)}
-                options={[
-                  { label: `AUTO`, value: 'AUTO' },
-                  ...[10, 20, 25, 50, 100, 250, 500].map(s => ({
-                    label: `₹${s}`,
-                    value: s
-                  }))
-                ]}
-                className="w-full font-sans text-xs"
-              />
-            </div>
+          {/* Card 4: DENSITY, ROWS & GREEKS */}
+          <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
+            <Flex align="center" gap={7} className="w-full">
+              {/* DENSITY */}
+              <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <AppstoreOutlined className="text-slate-500" /> DENSITY
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={density}
+                  onChange={val => onChangeDensity(val)}
+                  className="w-full font-sans text-xs"
+                  options={[
+                    { label: 'Comfortable', value: 'comfortable' },
+                    { label: 'Compact', value: 'compact' }
+                  ]}
+                />
+              </div>
 
-            {/* REF */}
-            <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <FileTextOutlined className="text-slate-500" /> REF
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={referenceMode}
-                onChange={val => onChangeReferenceMode(val)}
-                options={[
-                  { label: `ATM`, value: 'ATM' },
-                  { label: '+1 OTM', value: 'ATM_PLUS_1' },
-                  { label: '-1 ITM', value: 'ATM_MINUS_1' },
-                  { label: '+2 OTM', value: 'ATM_PLUS_2' },
-                  { label: '-2 ITM', value: 'ATM_MINUS_2' }
-                ]}
-                className="w-full font-sans text-xs"
-              />
-            </div>
-          </Flex>
-        </div>
+              {/* ROWS */}
+              <div className="flex-1 min-w-[60px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <UnorderedListOutlined className="text-slate-500" /> ROWS
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={maxVisibleRows}
+                  onChange={val => onChangeMaxVisibleRows && onChangeMaxVisibleRows(val)}
+                  className="w-full font-sans text-xs"
+                  options={[
+                    { label: 'ALL', value: 'ALL' },
+                    { label: '10', value: 10 },
+                    { label: '15', value: 15 },
+                    { label: '20', value: 20 },
+                    { label: '25', value: 25 },
+                    { label: '30', value: 30 },
+                    { label: '50', value: 50 },
+                    { label: '100', value: 100 }
+                  ]}
+                />
+              </div>
 
-        {/* Card 3: MIN STRIKE & MAX STRIKE */}
-        <div className="flex-[1] min-w-[175px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-          <Flex align="center" gap={7} className="w-full">
-            {/* MIN STRIKE */}
-            <div className="flex-1 min-w-[78px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <FilterOutlined className="text-slate-500" /> MIN STRIKE
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={minStrike}
-                onChange={val => {
-                  onChangeMinStrike(val);
-                  if (val !== 'ALL' && maxStrike !== 'ALL' && typeof val === 'number' && typeof maxStrike === 'number' && val > maxStrike) {
-                    onChangeMaxStrike('ALL');
-                  }
-                }}
-                className="w-full font-sans text-xs"
-                options={[
-                  { label: 'ALL', value: 'ALL' },
-                  ...allStrikes.map(s => ({
-                    label: `₹${s}`,
-                    value: s
-                  }))
-                ]}
-              />
-            </div>
-
-            {/* MAX STRIKE */}
-            <div className="flex-1 min-w-[78px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <FilterOutlined className="text-slate-500" /> MAX STRIKE
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={maxStrike}
-                onChange={val => {
-                  onChangeMaxStrike(val);
-                  if (val !== 'ALL' && minStrike !== 'ALL' && typeof val === 'number' && typeof minStrike === 'number' && val < minStrike) {
-                    onChangeMinStrike('ALL');
-                  }
-                }}
-                className="w-full font-sans text-xs"
-                options={[
-                  { label: 'ALL', value: 'ALL' },
-                  ...allStrikes.map(s => ({
-                    label: `₹${s}`,
-                    value: s
-                  }))
-                ]}
-              />
-            </div>
-          </Flex>
-        </div>
-
-        {/* Card 4: DENSITY, ROWS & GREEKS */}
-        <div className="flex-[1.5] min-w-[260px] rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 sm:px-2.5 sm:py-2.5 shadow-2xs flex flex-col justify-center">
-          <Flex align="center" gap={7} className="w-full">
-            {/* DENSITY */}
-            <div className="flex-1 min-w-[85px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <AppstoreOutlined className="text-slate-500" /> DENSITY
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={density}
-                onChange={val => onChangeDensity(val)}
-                className="w-full font-sans text-xs"
-                options={[
-                  { label: 'Comfortable', value: 'comfortable' },
-                  { label: 'Compact', value: 'compact' }
-                ]}
-              />
-            </div>
-
-            {/* ROWS */}
-            <div className="flex-1 min-w-[60px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <UnorderedListOutlined className="text-slate-500" /> ROWS
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={maxVisibleRows}
-                onChange={val => onChangeMaxVisibleRows && onChangeMaxVisibleRows(val)}
-                className="w-full font-sans text-xs"
-                options={[
-                  { label: 'ALL', value: 'ALL' },
-                  { label: '10', value: 10 },
-                  { label: '15', value: 15 },
-                  { label: '20', value: 20 },
-                  { label: '25', value: 25 },
-                  { label: '30', value: 30 },
-                  { label: '50', value: 50 },
-                  { label: '100', value: 100 }
-                ]}
-              />
-            </div>
-
-            {/* GREEKS */}
-            <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
-                <SlidersOutlined className="text-slate-500" /> GREEKS
-              </span>
-              <Select
-                size="middle"
-                virtual={false}
-                popupMatchSelectWidth={false}
-                value={showAdvancedData ? 'ON' : 'OFF'}
-                onChange={val => {
-                  if ((val === 'ON' && !showAdvancedData) || (val === 'OFF' && showAdvancedData)) {
-                    onToggleAdvancedData();
-                  }
-                }}
-                className="w-full font-sans text-xs"
-                options={[
-                  { label: 'OFF', value: 'OFF' },
-                  { label: 'ON', value: 'ON' }
-                ]}
-              />
-            </div>
-          </Flex>
+              {/* GREEKS */}
+              <div className="flex-1 min-w-[58px] flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1 truncate">
+                  <SlidersOutlined className="text-slate-500" /> GREEKS
+                </span>
+                <Select
+                  size="middle"
+                  virtual={false}
+                  popupMatchSelectWidth={false}
+                  value={showAdvancedData ? 'ON' : 'OFF'}
+                  onChange={val => {
+                    if ((val === 'ON' && !showAdvancedData) || (val === 'OFF' && showAdvancedData)) {
+                      onToggleAdvancedData();
+                    }
+                  }}
+                  className="w-full font-sans text-xs"
+                  options={[
+                    { label: 'OFF', value: 'OFF' },
+                    { label: 'ON', value: 'ON' }
+                  ]}
+                />
+              </div>
+            </Flex>
+          </div>
         </div>
       </div>
 

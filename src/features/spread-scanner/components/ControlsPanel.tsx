@@ -119,7 +119,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 flex flex-col gap-4 sm:gap-5 mb-4 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 flex flex-col gap-4 sm:gap-5 mb-0 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
       {/* Top Row: Asset Context & Quick Watchlist */}
       <div className="flex justify-between items-center flex-wrap gap-3.5 w-full">
         {/* Prominent Searchable Stock Selector */}
@@ -182,22 +182,22 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         </Space>
       </div>
 
-      {/* Main Parameters Row: CE/PE, Ratio, Gap Mode, Strike Steps, Range */}
+      {/* Main Parameters Grid: Clean 2-Row Responsive Layout Architecture */}
       <ProCard ghost gutter={[12, 12]} wrap className="pt-2 border-t border-slate-200/80 dark:border-slate-800 text-xs">
-        {/* 1. Option Type & Direction */}
-        <ProCard colSpan={{ xs: 24, md: 12, xl: 6 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
+        {/* ROW 1 - CARD A: Option Type & Direction Mode */}
+        <ProCard colSpan={{ xs: 24, md: 8, xl: 8 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
           <Flex align="center" justify="space-between" gap={10} className="w-full">
             <Segmented
               block
               value={optionType}
               onChange={val => onChangeOptionType(val as OptionType)}
-              className={`type-segmented-control flex-1 ${
+              className={`type-segmented-control shrink-0 ${
                 optionType === 'CE' ? 'segmented-ce' : 'segmented-pe'
               }`}
               options={[
                 {
                   label: (
-                    <Space size={6} align="center">
+                    <Space size={5} align="center">
                       <RiseOutlined />
                       <span>CE</span>
                     </Space>
@@ -206,7 +206,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                 },
                 {
                   label: (
-                    <Space size={6} align="center">
+                    <Space size={5} align="center">
                       <FallOutlined />
                       <span>PE</span>
                     </Space>
@@ -231,7 +231,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                 size="middle"
                 icon={<SwapOutlined />}
                 onClick={() => onChangeDirection(direction === 'NORMAL' ? 'REVERSE' : 'NORMAL')}
-                className={direction === 'NORMAL' ? 'px-2.5 sm:px-3.5 text-xs' : 'text-amber-500 border-amber-500/60 px-2.5 sm:px-3.5 text-xs'}
+                className={direction === 'NORMAL' ? 'px-2.5 sm:px-3.5 text-xs font-semibold' : 'text-amber-500 border-amber-500/60 px-2.5 sm:px-3.5 text-xs font-semibold'}
               >
                 <span className="hidden sm:inline">{direction === 'NORMAL' ? 'Standard' : 'Reverse'}</span>
               </Button>
@@ -239,8 +239,8 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
           </Flex>
         </ProCard>
 
-        {/* 2. Custom Ratio Controller */}
-        <ProCard colSpan={{ xs: 24, md: 12, xl: 6 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
+        {/* ROW 1 - CARD B: Ratio Spread Presets */}
+        <ProCard colSpan={{ xs: 24, md: 16, xl: 16 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
           <Flex align="center" gap={10} className="w-full overflow-x-auto no-scrollbar">
             <span className="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase shrink-0 font-mono">Ratio:</span>
             <Space size={6} align="center" className="overflow-x-auto no-scrollbar flex-nowrap">
@@ -255,7 +255,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                       onChangeRatio(p.long, p.short);
                       setCustomRatioOpen(false);
                     }}
-                    className={`font-mono text-xs px-2.5 sm:px-3 font-semibold ${
+                    className={`font-mono text-xs px-2.5 sm:px-3.5 font-semibold ${
                       isActive ? 'bg-emerald-600 border-emerald-600 text-white' : ''
                     }`}
                   >
@@ -273,7 +273,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                 <Button
                   size="middle"
                   icon={<PlusOutlined />}
-                  className="text-xs text-slate-500 dark:text-slate-400 px-2.5"
+                  className="text-xs text-slate-500 dark:text-slate-400 px-2.5 font-semibold"
                 >
                   Custom
                 </Button>
@@ -282,8 +282,8 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
           </Flex>
         </ProCard>
 
-        {/* 3. Gap Controls (Exchange Strikes vs Rupee Target) */}
-        <ProCard colSpan={{ xs: 24, md: 12, xl: 6 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
+        {/* ROW 2 - CARD C: Gap Controls (Exchange Strikes vs Rupee Target) */}
+        <ProCard colSpan={{ xs: 24, md: 12, xl: 12 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
           <Flex align="center" gap={10} className="w-full overflow-x-auto no-scrollbar">
             <Segmented
               size="middle"
@@ -293,12 +293,12 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                 { label: 'Steps', value: 'STRIKE_STEPS' },
                 { label: '₹ Gap', value: 'PRICE_GAP' }
               ]}
-              className="shrink-0"
+              className="shrink-0 font-semibold"
             />
 
             {gapMode === 'STRIKE_STEPS' ? (
               <Space size={6} align="center" className="font-mono overflow-x-auto no-scrollbar flex-nowrap">
-                {[1, 2, 3, 4, 5].map(step => (
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(step => (
                   <Button
                     key={step}
                     size="middle"
@@ -314,7 +314,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               </Space>
             ) : (
               <Space size={6} align="center" className="font-mono overflow-x-auto no-scrollbar flex-nowrap">
-                {[20, 50, 100, 200].map(gap => (
+                {[20, 50, 100, 200, 300, 500].map(gap => (
                   <Button
                     key={gap}
                     size="middle"
@@ -332,20 +332,20 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
           </Flex>
         </ProCard>
 
-        {/* 4. Strike Range (±5, ±10, ±15, ±20) */}
-        <ProCard colSpan={{ xs: 24, md: 12, xl: 6 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
+        {/* ROW 2 - CARD D: Strike Range & Available Depth */}
+        <ProCard colSpan={{ xs: 24, md: 12, xl: 12 }} bordered size="small" className="rounded-xl shadow-2xs dark:bg-slate-950/60" bodyStyle={{ padding: '12px 14px' }}>
           <Flex align="center" justify="space-between" gap={10} className="w-full overflow-x-auto no-scrollbar">
             <Space size={8} align="center" className="shrink-0">
               <span className="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase font-mono">Range:</span>
               <Space size={4} align="center" className="font-mono flex-nowrap">
-                {[5, 10, 15, 20].map(r => (
+                {[5, 10, 15, 20, 25].map(r => (
                   <Button
                     key={r}
                     size="middle"
                     type={strikeRange === r ? 'primary' : 'default'}
                     onClick={() => onChangeStrikeRange(r)}
-                    className={`px-2 sm:px-3 font-bold text-xs ${
-                      strikeRange === r ? 'bg-slate-700 dark:bg-slate-600 text-white' : 'text-slate-500 dark:text-slate-400'
+                    className={`px-2.5 sm:px-3.5 font-bold text-xs ${
+                      strikeRange === r ? 'bg-slate-800 dark:bg-slate-700 text-white border-slate-800 dark:border-slate-700' : 'text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     ±{r}
@@ -354,8 +354,8 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               </Space>
             </Space>
 
-            <div className="text-xs text-slate-500 font-mono text-right shrink-0">
-              <span>{availableStrikesCount.below}↓/{availableStrikesCount.above}↑</span>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-mono text-right shrink-0">
+              <span>{availableStrikesCount.below}↓ / {availableStrikesCount.above}↑</span>
             </div>
           </Flex>
         </ProCard>

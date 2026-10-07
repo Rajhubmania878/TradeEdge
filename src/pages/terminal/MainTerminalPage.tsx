@@ -702,43 +702,36 @@ const MainTerminalContent: React.FC = () => {
         {activeTab === 'SCANNER' && (
           <React.Suspense fallback={<LoadingScreen mode="panel" tip="Calibrating Ratio Spread Scanner Grid..." />}>
             <div className="flex flex-col gap-3 sm:gap-3.5">
-              <ProCard
-                bordered
-                size="default"
-                className="shadow-2xs rounded-2xl overflow-hidden dark:bg-slate-900/80"
-                bodyStyle={{ padding: 0 }}
-              >
-                <ControlsPanel
-                  selectedStock={stock}
-                  onSelectStock={selectStock}
-                  selectedExpiry={expiry}
-                  onSelectExpiry={setExpiry}
-                  optionType={optionType}
-                  onChangeOptionType={setOptionType}
-                  direction={direction}
-                  onChangeDirection={setDirection}
-                  ratioLong={ratioLong}
-                  ratioShort={ratioShort}
-                  onChangeRatio={(l, s) => {
-                    setRatioLong(l);
-                    setRatioShort(s);
-                  }}
-                  gapMode={gapMode}
-                  onChangeGapMode={setGapMode}
-                  gapSteps={gapSteps}
-                  onChangeGapSteps={setGapSteps}
-                  targetPriceGap={targetPriceGap}
-                  onChangeTargetPriceGap={setTargetPriceGap}
-                  strikeRange={strikeRange}
-                  onChangeStrikeRange={setStrikeRange}
-                  referenceMode={referenceMode}
-                  onChangeReferenceMode={setReferenceMode}
-                  atmStrike={atmStrike}
-                  pricingMode={pricingMode}
-                  onChangePricingMode={setPricingMode}
-                  availableStrikesCount={availableStrikesCount}
-                />
-              </ProCard>
+              <ControlsPanel
+                selectedStock={stock}
+                onSelectStock={selectStock}
+                selectedExpiry={expiry}
+                onSelectExpiry={setExpiry}
+                optionType={optionType}
+                onChangeOptionType={setOptionType}
+                direction={direction}
+                onChangeDirection={setDirection}
+                ratioLong={ratioLong}
+                ratioShort={ratioShort}
+                onChangeRatio={(l, s) => {
+                  setRatioLong(l);
+                  setRatioShort(s);
+                }}
+                gapMode={gapMode}
+                onChangeGapMode={setGapMode}
+                gapSteps={gapSteps}
+                onChangeGapSteps={setGapSteps}
+                targetPriceGap={targetPriceGap}
+                onChangeTargetPriceGap={setTargetPriceGap}
+                strikeRange={strikeRange}
+                onChangeStrikeRange={setStrikeRange}
+                referenceMode={referenceMode}
+                onChangeReferenceMode={setReferenceMode}
+                atmStrike={atmStrike}
+                pricingMode={pricingMode}
+                onChangePricingMode={setPricingMode}
+                availableStrikesCount={availableStrikesCount}
+              />
 
               <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs">
                 <FilterToolbar

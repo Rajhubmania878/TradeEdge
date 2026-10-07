@@ -508,6 +508,9 @@ td {
   padding: 3px !important;
   border-radius: 12px !important;
   border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  display: inline-flex !important;
+  max-width: 135px !important;
+  width: 100% !important;
 }
 
 .dark .type-segmented-control.ant-segmented {
@@ -515,9 +518,18 @@ td {
   border-color: rgba(30, 41, 59, 0.8) !important;
 }
 
+.type-segmented-control .ant-segmented-group {
+  display: flex !important;
+  width: 100% !important;
+  align-items: center !important;
+}
+
 .type-segmented-control .ant-segmented-item {
   border-radius: 8px !important;
   transition: color 0.15s ease !important;
+  flex: 1 1 50% !important;
+  width: 50% !important;
+  text-align: center !important;
 }
 
 .type-segmented-control .ant-segmented-thumb {
@@ -530,8 +542,12 @@ td {
   font-weight: 800 !important;
   font-size: 12px !important;
   line-height: 1.25 !important;
-  padding: 4px 10px !important;
+  padding: 4px 6px !important;
   color: #475569 !important; /* slate-600 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
 }
 
 .dark .type-segmented-control .ant-segmented-item-label {
