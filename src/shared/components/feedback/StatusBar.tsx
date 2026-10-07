@@ -27,235 +27,135 @@ export const StatusBar: React.FC<StatusBarProps> = ({
 
   const formatTime = (ts: number) => {
     const d = new Date(ts || Date.now());
-    return d.toTimeString().split(' ')[0] + '.' + String(d.getMilliseconds()).padStart(3, '0');
+    return d.toTimeString().split(' ')[0]; // Clean HH:MM:SS format without millisecond noise
   };
 
   const isLive = metrics?.status === 'LIVE';
   const effectiveStk = stk === 'AUTO' ? (stock?.strikeStep || 20) : stk;
   const derivSeg = exchange === 'BSE' ? 'BFO' : 'NFO';
-  const cashSeg = exchange === 'BSE' ? 'BSE_CM' : 'NSE_CM';
+  const cashSeg = exchange === 'BSE' ? 'BSE' : 'NSE';
   const basisVal = summary?.basis ?? 0;
   const isBasisPositive = basisVal >= 0;
 
-  // Explicit, fail-safe color tokens guaranteeing 100% visibility in Light and Dark modes
-  const colors = {
-    bg: isDark ? '#0e1422' : '#ffffff',
-    border: isDark ? '#1e293b' : '#e2e8f0',
-    primaryText: isDark ? '#f8fafc' : '#0f172a',
-    secondaryText: isDark ? '#94a3b8' : '#475569',
-    mutedText: isDark ? '#64748b' : '#64748b',
-    divider: isDark ? '#334155' : '#cbd5e1',
-    gain: isDark ? '#34d399' : '#059669',
-    loss: isDark ? '#fb7185' : '#e11d48',
-    atm: isDark ? '#fbbf24' : '#d97706',
-    stk: isDark ? '#60a5fa' : '#2563eb',
-    straddle: isDark ? '#c084fc' : '#7c3aed',
-  };
-
   return (
-    <div
-      className="sticky bottom-0 z-30 w-full text-xs font-mono select-none shadow-md transition-colors py-2 sm:py-2.5 border-t"
-      style={{
-        backgroundColor: colors.bg,
-        borderColor: colors.border,
-        color: colors.primaryText
-      }}
-    >
-      <div className="max-w-[1920px] mx-auto flex flex-wrap items-center justify-between gap-y-2 gap-x-4 px-3 sm:px-4 md:px-6">
-        {/* Left: Financial Matrix Tickers with Guaranteed Inline Contrast */}
-        <Flex align="center" wrap="wrap" gap={12} className="w-full sm:w-auto">
-          {/* Symbol & Exchange */}
-          <Space size={8} align="center">
-            <span
-              className="text-sm font-sans font-bold tracking-tight"
-              style={{ color: colors.primaryText }}
-            >
+    <div className="sticky bottom-0 z-30 w-full text-xs font-mono select-none shadow-md transition-colors py-1.5 sm:py-2 bg-white dark:bg-[#0b0f19] border-t border-slate-200 dark:border-slate-800/80 text-slate-800 dark:text-slate-100">
+      <div className="max-w-[1920px] mx-auto flex flex-wrap items-center justify-between gap-y-2 gap-x-3 px-3 sm:px-4 md:px-6">
+        {/* Left: Financial Matrix Tickers in Grouped Pill Cards */}
+        <Flex align="center" wrap="wrap" gap={8} className="w-full sm:w-auto">
+          {/* Group 1: Symbol & Exchange Context */}
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800">
+            <span className="text-xs font-sans font-extrabold tracking-tight text-slate-900 dark:text-white">
               {stock?.symbol || 'RELIANCE'}
             </span>
-            <Tag color="cyan" className="m-0 text-[11px] font-mono font-semibold px-1.5 py-0 border-0">
+            <Tag color="cyan" className="m-0 text-[10px] font-mono font-bold px-1.5 py-0 border-0">
               {exchange}
             </Tag>
-            <Tag color="green" className="m-0 text-[11px] font-mono font-semibold px-1.5 py-0 border-0">
-              {derivSeg} ACTIVE
+            <Tag color="green" className="m-0 text-[10px] font-mono font-bold px-1.5 py-0 border-0">
+              {derivSeg}
             </Tag>
-          </Space>
+          </div>
 
-          <span style={{ color: colors.divider }} className="font-bold">|</span>
-
-          {/* CASH / SPOT */}
-          <div className="flex items-baseline gap-1" title={`${cashSeg} Cash Spot Price`}>
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              {cashSeg}:
+          {/* Group 2: Spot Cash Price */}
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800" title={`${cashSeg} Cash Spot Price`}>
+            <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">
+              {cashSeg} SPOT:
             </span>
-            <span
-              className="font-bold tabular-nums text-xs"
-              style={{ color: colors.primaryText }}
-            >
+            <span className="font-bold tabular-nums text-xs text-slate-900 dark:text-white">
               ₹{(summary?.cash ?? currentSpot ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
-          {/* FUT */}
-          <div className="flex items-baseline gap-1">
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              FUT:
-            </span>
-            <span
-              className="font-bold tabular-nums text-xs"
-              style={{ color: colors.primaryText }}
-            >
-              ₹{(summary?.future ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
+          {/* Group 3: Futures Price & Basis */}
+          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800">
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">FUT:</span>
+              <span className="font-bold tabular-nums text-xs text-slate-900 dark:text-white">
+                ₹{(summary?.future ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">BASIS:</span>
+              <span className={`font-bold tabular-nums text-xs ${isBasisPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                {isBasisPositive ? '+' : ''}₹{basisVal.toFixed(2)}
+              </span>
+            </div>
           </div>
 
-          {/* BASIS */}
-          <div className="flex items-baseline gap-1">
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              BASIS:
-            </span>
-            <span
-              className="font-bold tabular-nums text-xs"
-              style={{ color: isBasisPositive ? colors.gain : colors.loss }}
-            >
-              {isBasisPositive ? '+' : ''}₹{basisVal.toFixed(2)}
-            </span>
+          {/* Group 4: ATM Strike & Step */}
+          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800">
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">ATM:</span>
+              <span className="font-bold tabular-nums text-xs text-amber-600 dark:text-amber-400">
+                ₹{summary?.atm ?? '-'}
+              </span>
+            </div>
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">STEP:</span>
+              <span className="font-bold tabular-nums text-xs text-blue-600 dark:text-blue-400">
+                ₹{effectiveStk}
+              </span>
+            </div>
           </div>
 
-          {/* ATM */}
-          <div className="flex items-baseline gap-1">
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              ATM:
-            </span>
-            <span
-              className="font-bold tabular-nums text-xs"
-              style={{ color: colors.atm }}
-            >
-              ₹{summary?.atm ?? '-'}
-            </span>
+          {/* Group 5: Expiry & DTE */}
+          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800">
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">EXP:</span>
+              <span className="font-bold text-xs text-slate-900 dark:text-white uppercase">
+                {expiry}
+              </span>
+            </div>
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">DTE:</span>
+              <span className="font-bold tabular-nums text-xs text-slate-900 dark:text-white">
+                {summary?.dte ?? 0}d
+              </span>
+            </div>
           </div>
 
-          {/* STK */}
-          <div className="flex items-baseline gap-1">
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              STK:
-            </span>
-            <span
-              className="font-bold tabular-nums text-xs"
-              style={{ color: colors.stk }}
-            >
-              ₹{effectiveStk}
-            </span>
-          </div>
-
-          {/* EXP */}
-          <div className="flex items-baseline gap-1">
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              EXP:
-            </span>
-            <span
-              className="font-bold text-xs uppercase"
-              style={{ color: colors.primaryText }}
-            >
-              {expiry}
-            </span>
-          </div>
-
-          {/* DTE */}
-          <div className="flex items-baseline gap-1">
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              DTE:
-            </span>
-            <span
-              className="font-bold tabular-nums text-xs"
-              style={{ color: colors.primaryText }}
-            >
-              {summary?.dte ?? 0}d
-            </span>
-          </div>
-
-          {/* STRADDLE */}
-          <div className="flex items-baseline gap-1" title="ATM Call LTP + ATM Put LTP">
-            <span
-              className="font-semibold text-[11px] uppercase tracking-wider"
-              style={{ color: colors.secondaryText }}
-            >
-              ATM STRADDLE:
-            </span>
-            <span
-              className="font-bold tabular-nums text-xs"
-              style={{ color: colors.straddle }}
-            >
+          {/* Group 6: ATM Straddle Premium */}
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800" title="ATM Call LTP + ATM Put LTP">
+            <span className="text-[10px] font-semibold text-slate-500 uppercase font-sans">STRADDLE:</span>
+            <span className="font-bold tabular-nums text-xs text-purple-600 dark:text-purple-400">
               ₹{(summary?.atmStraddle ?? 0).toFixed(2)}
             </span>
-            <span
-              className="font-semibold text-[11px]"
-              style={{ color: colors.secondaryText }}
-            >
+            <span className="text-[10px] font-semibold text-slate-500">
               ({(summary?.atmStraddlePct ?? 0).toFixed(1)}%)
             </span>
           </div>
         </Flex>
 
-        {/* Right: Institutional Feed & Connection Status */}
-        <Flex align="center" gap={12} className="text-[11px]" style={{ color: colors.secondaryText }}>
-          {/* Connection status tag */}
-          <Space size={6} align="center">
+        {/* Right: Institutional Feed & Connection Telemetry */}
+        <Flex align="center" gap={10} className="text-xs text-slate-500 dark:text-slate-400">
+          {/* Connection Status Badge */}
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800">
             <Badge status={isLive ? 'processing' : 'warning'} color={isLive ? '#10b981' : '#f59e0b'} />
-            <span
-              className="text-xs font-mono font-bold"
-              style={{ color: isLive ? colors.gain : colors.atm }}
-            >
+            <span className={`text-xs font-mono font-bold ${isLive ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
               {isLive ? 'LIVE' : 'STALE'}
             </span>
-          </Space>
-
-          <span style={{ color: colors.divider }} className="hidden sm:inline font-bold">/</span>
-
-          {/* Source mode */}
-          <div className="hidden sm:flex items-center gap-1.5 font-medium" style={{ color: colors.secondaryText }}>
-            <SafetyCertificateOutlined className="text-xs" style={{ color: colors.mutedText }} />
-            <span>{metrics?.angelConnected ? 'Angel One SmartAPI' : 'High-Fi Stream'}</span>
           </div>
 
-          <span style={{ color: colors.divider }} className="hidden md:inline font-bold">/</span>
-
-          {/* Latency & Age */}
-          <div className="hidden lg:flex items-center gap-2 font-medium" style={{ color: colors.secondaryText }}>
-            <span className="flex items-center gap-1">
-              <WifiOutlined className="text-xs" style={{ color: colors.mutedText }} />
-              <span className="font-bold" style={{ color: colors.primaryText }}>{metrics?.latencyMs ?? 0}ms</span>
-            </span>
-            <span>·</span>
-            <span>{metrics?.dataAgeMs ?? 0}ms age</span>
+          {/* Connection Source */}
+          <div className="hidden sm:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800 font-medium">
+            <SafetyCertificateOutlined className="text-xs text-slate-400" />
+            <span className="text-slate-700 dark:text-slate-200">{metrics?.angelConnected ? 'Angel One SmartAPI' : 'High-Fi Stream'}</span>
           </div>
 
-          <span style={{ color: colors.divider }} className="hidden xl:inline font-bold">/</span>
+          {/* Latency & Ping */}
+          <div className="hidden lg:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800 font-medium">
+            <WifiOutlined className="text-xs text-slate-400" />
+            <span className="font-bold text-slate-900 dark:text-slate-100">{metrics?.latencyMs ?? 0}ms</span>
+            <span className="text-slate-400">·</span>
+            <span className="text-slate-500">{metrics?.dataAgeMs ?? 0}ms age</span>
+          </div>
 
-          {/* Last Tick Time */}
-          <div className="hidden xl:flex items-center gap-1 font-medium" style={{ color: colors.secondaryText }}>
-            <ClockCircleOutlined className="text-xs" style={{ color: colors.mutedText }} />
-            <span className="font-bold" style={{ color: colors.primaryText }}>{formatTime(metrics?.lastTickTime)} IST</span>
+          {/* Tick Clock */}
+          <div className="hidden xl:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-800 font-medium">
+            <ClockCircleOutlined className="text-xs text-slate-400" />
+            <span className="font-bold text-slate-900 dark:text-slate-100">{formatTime(metrics?.lastTickTime)} IST</span>
           </div>
         </Flex>
       </div>

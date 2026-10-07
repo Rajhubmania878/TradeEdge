@@ -6,7 +6,7 @@ import {
   ReferenceStrikeMode,
   SavedPreset
 } from '@/shared/types';
-import { Select, Button, Tooltip, Popover, InputNumber, Flex, Tag, Typography, message, Segmented } from 'antd';
+import { Select, Button, Tooltip, Popover, InputNumber, Flex, Tag, Typography, message, Segmented, Space } from 'antd';
 import {
   ReloadOutlined,
   SaveOutlined,
@@ -20,7 +20,9 @@ import {
   FileTextOutlined,
   NumberOutlined,
   BarChartOutlined,
-  UnorderedListOutlined
+  UnorderedListOutlined,
+  RiseOutlined,
+  FallOutlined
 } from '@ant-design/icons';
 
 const { Text } = Typography;
@@ -259,18 +261,29 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
                 block
                 value={optionType}
                 onChange={val => onChangeOptionType(val as OptionType)}
+                className={`type-segmented-control w-full ${
+                  optionType === 'CE' ? 'segmented-ce' : 'segmented-pe'
+                }`}
                 options={[
                   {
-                    label: <span className="font-semibold text-emerald-600 dark:text-emerald-400">CE</span>,
+                    label: (
+                      <Space size={6} align="center">
+                        <RiseOutlined />
+                        <span>CE</span>
+                      </Space>
+                    ),
                     value: 'CE'
                   },
                   {
-                    label: <span className="font-semibold text-rose-600 dark:text-rose-400">PE</span>,
+                    label: (
+                      <Space size={6} align="center">
+                        <FallOutlined />
+                        <span>PE</span>
+                      </Space>
+                    ),
                     value: 'PE'
                   }
                 ]}
-                size="middle"
-                className="w-full font-sans"
               />
             </div>
 

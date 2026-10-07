@@ -446,42 +446,41 @@ export const RatioMatrixSpreadsheet: React.FC<RatioMatrixSpreadsheetProps> = ({
 
   return (
     <div className="w-full flex flex-col font-sans bg-slate-50 dark:bg-slate-950 transition-colors">
-      {/* PROFESSIONAL ANT DESIGN CARD HEADER */}
-      <div className="px-4 py-2.5 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 transition-colors">
-        <Space size={10} align="center" wrap>
+      {/* PROFESSIONAL ANT DESIGN CARD HEADER WITH CORNER-ATTACHED BADGE */}
+      <div className="pl-0 pr-4 py-0 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 transition-colors min-h-[44px]">
+        <div className="flex items-stretch gap-3.5">
+          {/* ATTACHED CORNER TAB BADGE */}
           {optionType === 'CE' ? (
-            <Tag
-              color="success"
-              className="font-sans font-bold text-xs uppercase min-w-[104px] justify-center px-3 py-1 m-0 rounded-md flex items-center gap-1.5 shadow-2xs"
-            >
-              <RiseOutlined /> CALLS (CE)
-            </Tag>
+            <div className="bg-emerald-600 dark:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm uppercase px-4 py-2.5 rounded-tl-xl rounded-br-xl shadow-md flex items-center gap-2 tracking-wider shrink-0 select-none">
+              <RiseOutlined className="text-base" />
+              <span>CALLS (CE)</span>
+            </div>
           ) : (
-            <Tag
-              color="error"
-              className="font-sans font-bold text-xs uppercase min-w-[104px] justify-center px-3 py-1 m-0 rounded-md flex items-center gap-1.5 shadow-2xs"
-            >
-              <FallOutlined /> PUTS (PE)
-            </Tag>
+            <div className="bg-rose-600 dark:bg-rose-500 text-white font-extrabold text-xs sm:text-sm uppercase px-4 py-2.5 rounded-tl-xl rounded-br-xl shadow-md flex items-center gap-2 tracking-wider shrink-0 select-none">
+              <FallOutlined className="text-base" />
+              <span>PUTS (PE)</span>
+            </div>
           )}
 
-          <Typography.Text strong className="font-sans text-sm tracking-tight text-slate-900 dark:text-white">
-            Ratio Spread Matrix
-          </Typography.Text>
+          <div className="flex items-center gap-2.5 flex-wrap py-2">
+            <Typography.Text strong className="font-sans text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Ratio Spread Matrix
+            </Typography.Text>
 
-          <Tag color="blue" className="font-mono text-xs font-semibold px-2 py-0.5 m-0 rounded-md">
-            Ratio {ratioLong}:{ratioShort}
-          </Tag>
-
-          {effectiveStkStep > 0 && (
-            <Tag className="font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 m-0">
-              Step: ₹{effectiveStkStep}
+            <Tag color="blue" className="font-mono text-xs font-bold px-2 py-0.5 m-0 rounded-md border-0">
+              Ratio {ratioLong}:{ratioShort}
             </Tag>
-          )}
-        </Space>
 
-        <Space size={12} align="center" className="text-xs">
-          <Tag color="cyan" className="font-sans font-bold text-xs px-2 py-0.5 m-0">
+            {effectiveStkStep > 0 && (
+              <Tag className="font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 m-0 rounded-md">
+                Step: ₹{effectiveStkStep}
+              </Tag>
+            )}
+          </div>
+        </div>
+
+        <Space size={12} align="center" className="text-xs py-2">
+          <Tag color="cyan" className="font-sans font-bold text-xs px-2.5 py-0.5 m-0 rounded-md border-0">
             {stock.symbol}
           </Tag>
           <span className="text-slate-500 dark:text-slate-400 font-sans">

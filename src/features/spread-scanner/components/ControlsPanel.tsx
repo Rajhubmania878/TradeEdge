@@ -9,7 +9,7 @@ import {
 import { ProCard } from '@ant-design/pro-components';
 import { StockSelectorDropdown } from '@/shared/components/inputs/StockSelectorDropdown';
 import { Select, Segmented, Button, Tooltip, Popover, InputNumber, Space, Flex, Divider } from 'antd';
-import { SwapOutlined, PlusOutlined } from '@ant-design/icons';
+import { SwapOutlined, PlusOutlined, RiseOutlined, FallOutlined } from '@ant-design/icons';
 
 
 interface ControlsPanelProps {
@@ -191,34 +191,29 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               block
               value={optionType}
               onChange={val => onChangeOptionType(val as OptionType)}
+              className={`type-segmented-control flex-1 ${
+                optionType === 'CE' ? 'segmented-ce' : 'segmented-pe'
+              }`}
               options={[
                 {
                   label: (
-                    <span className={`font-bold font-mono transition-colors text-xs ${
-                      optionType === 'CE'
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-slate-600 dark:text-slate-400'
-                    }`}>
-                      CALL (CE)
-                    </span>
+                    <Space size={6} align="center">
+                      <RiseOutlined />
+                      <span>CE</span>
+                    </Space>
                   ),
                   value: 'CE'
                 },
                 {
                   label: (
-                    <span className={`font-bold font-mono transition-colors text-xs ${
-                      optionType === 'PE'
-                        ? 'text-rose-600 dark:text-rose-400'
-                        : 'text-slate-600 dark:text-slate-400'
-                    }`}>
-                      PUT (PE)
-                    </span>
+                    <Space size={6} align="center">
+                      <FallOutlined />
+                      <span>PE</span>
+                    </Space>
                   ),
                   value: 'PE'
                 }
               ]}
-              size="middle"
-              className="flex-1 shadow-2xs"
             />
 
             <Tooltip

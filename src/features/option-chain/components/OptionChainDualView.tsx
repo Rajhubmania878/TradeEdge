@@ -99,12 +99,37 @@ export const OptionChainDualView: React.FC<OptionChainDualViewProps> = ({
           <Segmented
             value={viewFilter}
             onChange={val => setViewFilter(val as any)}
+            className={`type-segmented-control ${
+              viewFilter === 'CE'
+                ? 'segmented-ce'
+                : viewFilter === 'PE'
+                ? 'segmented-pe'
+                : 'segmented-dual'
+            }`}
             options={[
-              { label: <span className="px-1.5 font-medium">Dual</span>, value: 'DUAL' },
-              { label: <span className="px-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">Calls (CE)</span>, value: 'CE' },
-              { label: <span className="px-1.5 text-rose-600 dark:text-rose-400 font-semibold">Puts (PE)</span>, value: 'PE' }
+              {
+                label: 'Dual',
+                value: 'DUAL'
+              },
+              {
+                label: (
+                  <Space size={4} align="center">
+                    <RiseOutlined />
+                    <span>CE</span>
+                  </Space>
+                ),
+                value: 'CE'
+              },
+              {
+                label: (
+                  <Space size={4} align="center">
+                    <FallOutlined />
+                    <span>PE</span>
+                  </Space>
+                ),
+                value: 'PE'
+              }
             ]}
-            size="small"
           />
         </div>
       </div>

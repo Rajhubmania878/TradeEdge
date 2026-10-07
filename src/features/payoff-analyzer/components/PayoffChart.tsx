@@ -130,10 +130,21 @@ export const PayoffChart: React.FC<PayoffChartProps> = React.memo(({
     pnlPerLot: (payoffResult.points.find(p => Math.abs(p.spotPrice - currentSpot) < 5)?.pnlPerShare || 0) * lotSize
   };
 
+  const formatPnl = (val: number, isLot = false) => {
+    const absVal = Math.abs(val);
+    const formatted = isLot
+      ? absVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : absVal.toFixed(2);
+
+    if (val > 0) return `+₹${formatted}`;
+    if (val < 0) return `-₹${formatted}`;
+    return `₹${formatted}`;
+  };
+
   return (
     <div className="relative select-none font-sans">
       {/* Ant Design Pro Top Control & Real-Time Telemetry Bar */}
-      <Flex justify="space-between" align="center" wrap="wrap" gap={12} className="pb-3.5 border-b border-slate-200/80 dark:border-slate-800 mb-2 text-xs min-h-[44px]">
+      <Flex justify="space-between" align="center" wrap="wrap" gap={12} className="pb-3 border-b border-slate-200/80 dark:border-slate-800 mb-2 text-xs min-h-[44px]">
         {/* Left: Strategic Legend */}
         <Space size={14} align="center" wrap className="text-slate-600 dark:text-slate-300">
           <span className="flex items-center gap-1.5 font-medium">
@@ -146,43 +157,53 @@ export const PayoffChart: React.FC<PayoffChartProps> = React.memo(({
           </span>
           <span className="flex items-center gap-1.5 font-medium">
             <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 inline-block ring-2 ring-cyan-500/25" />
-            <span className="text-slate-700 dark:text-slate-200 font-semibold">Current Spot (₹{currentSpot.toLocaleString('en-IN')})</span>
+            <span className="text-slate-700 dark:text-slate-200 font-semibold">Current Spot (₹{currentSpot.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</span>
           </span>
         </Space>
 
-        {/* Right: Floating Glassmorphic P&L Inspector */}
+        {/* Right: Floating Fixed-Width P&L Inspector */}
         <div className="h-8 flex items-center justify-end">
-          <div className="font-mono text-xs bg-slate-50/90 dark:bg-slate-800/90 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs flex items-center gap-3.5">
-            <div className="flex items-center gap-1">
+          <div className="font-mono text-xs bg-slate-50/95 dark:bg-slate-800/95 px-3 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-700 shadow-xs flex items-center justify-between gap-3 min-w-[390px] tabular-nums select-none">
+            <div className="flex items-center gap-1 min-w-[105px]">
               <span className="text-slate-400 font-sans font-medium text-[11px]">Spot:</span>
-              <span className="text-slate-900 dark:text-white font-bold">
-                ₹{activeInspectionPoint.spotPrice.toLocaleString('en-IN')}
+              <span className="text-slate-900 dark:text-white font-bold font-mono tabular-nums">
+                ₹{activeInspectionPoint.spotPrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 min-w-[110px]">
               <span className="text-slate-400 font-sans font-medium text-[11px]">P&L/sh:</span>
               <span
-                className={`font-bold ${
-                  activeInspectionPoint.pnlPerShare >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                className={`font-bold font-mono tabular-nums ${
+                  activeInspectionPoint.pnlPerShare > 0
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : activeInspectionPoint.pnlPerShare < 0
+                    ? 'text-rose-600 dark:text-rose-400'
+                    : 'text-slate-700 dark:text-slate-300'
                 }`}
               >
-                {activeInspectionPoint.pnlPerShare >= 0 ? '+' : ''}₹{activeInspectionPoint.pnlPerShare.toFixed(2)}
+                {formatPnl(activeInspectionPoint.pnlPerShare)}
               </span>
             </div>
 
-            <div className="flex items-center gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
-              <span className="text-slate-400 font-sans font-medium text-[11px]">Total:</span>
-              <span
-                className={`font-bold ${
-                  activeInspectionPoint.pnlPerLot >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
-                }`}
-              >
-                {activeInspectionPoint.pnlPerLot >= 0 ? '+' : ''}₹{activeInspectionPoint.pnlPerLot.toLocaleString('en-IN')}
-              </span>
+            <div className="flex items-center gap-1.5 border-l border-slate-200 dark:border-slate-700 pl-2.5 min-w-[165px] justify-between">
+              <div className="flex items-center gap-1">
+                <span className="text-slate-400 font-sans font-medium text-[11px]">Total:</span>
+                <span
+                  className={`font-bold font-mono tabular-nums ${
+                    activeInspectionPoint.pnlPerLot > 0
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : activeInspectionPoint.pnlPerLot < 0
+                      ? 'text-rose-600 dark:text-rose-400'
+                      : 'text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  {formatPnl(activeInspectionPoint.pnlPerLot, true)}
+                </span>
+              </div>
               <Tag
                 color={activeInspectionPoint.pnlPerShare >= 0 ? 'success' : 'error'}
-                className="font-sans font-bold text-[10px] ml-1.5 px-1.5 py-0 m-0 rounded"
+                className="font-sans font-bold text-[10px] px-1.5 py-0 m-0 rounded border-0 shrink-0"
               >
                 {activeInspectionPoint.pnlPerShare >= 0 ? 'PROFIT' : 'LOSS'}
               </Tag>

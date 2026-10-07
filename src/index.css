@@ -502,6 +502,93 @@ td {
   padding: 2px !important;
 }
 
+/* Ant Design Segmented Control with CE (Emerald Green) and PE (Rose Red) Active Themes */
+.type-segmented-control.ant-segmented {
+  background-color: rgba(241, 245, 249, 1) !important; /* light: bg-slate-100 */
+  padding: 3px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.dark .type-segmented-control.ant-segmented {
+  background-color: rgba(15, 23, 42, 0.95) !important; /* dark: bg-slate-900 */
+  border-color: rgba(30, 41, 59, 0.8) !important;
+}
+
+.type-segmented-control .ant-segmented-item {
+  border-radius: 8px !important;
+  transition: color 0.15s ease !important;
+}
+
+.type-segmented-control .ant-segmented-thumb {
+  border-radius: 8px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.type-segmented-control .ant-segmented-item-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  padding: 4px 10px !important;
+  color: #475569 !important; /* slate-600 */
+}
+
+.dark .type-segmented-control .ant-segmented-item-label {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+/* CE Selected State: Solid Emerald Green Thumb */
+.type-segmented-control.segmented-ce .ant-segmented-thumb,
+.type-segmented-control.segmented-ce .ant-segmented-item-selected {
+  background-color: #059669 !important; /* emerald-600 */
+  box-shadow: 0 1px 3px rgba(5, 150, 105, 0.3) !important;
+}
+
+.dark .type-segmented-control.segmented-ce .ant-segmented-thumb,
+.dark .type-segmented-control.segmented-ce .ant-segmented-item-selected {
+  background-color: #10b981 !important; /* emerald-500 */
+}
+
+.type-segmented-control.segmented-ce .ant-segmented-item-selected .ant-segmented-item-label,
+.type-segmented-control.segmented-ce .ant-segmented-item-selected .ant-segmented-item-label * {
+  color: #ffffff !important;
+}
+
+/* PE Selected State: Solid Rose Red Thumb */
+.type-segmented-control.segmented-pe .ant-segmented-thumb,
+.type-segmented-control.segmented-pe .ant-segmented-item-selected {
+  background-color: #e11d48 !important; /* rose-600 */
+  box-shadow: 0 1px 3px rgba(225, 29, 72, 0.3) !important;
+}
+
+.dark .type-segmented-control.segmented-pe .ant-segmented-thumb,
+.dark .type-segmented-control.segmented-pe .ant-segmented-item-selected {
+  background-color: #f43f5e !important; /* rose-500 */
+}
+
+.type-segmented-control.segmented-pe .ant-segmented-item-selected .ant-segmented-item-label,
+.type-segmented-control.segmented-pe .ant-segmented-item-selected .ant-segmented-item-label * {
+  color: #ffffff !important;
+}
+
+/* Dual Selected State for Option Chain */
+.type-segmented-control.segmented-dual .ant-segmented-thumb,
+.type-segmented-control.segmented-dual .ant-segmented-item-selected {
+  background-color: #2563eb !important; /* blue-600 */
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3) !important;
+}
+
+.dark .type-segmented-control.segmented-dual .ant-segmented-thumb,
+.dark .type-segmented-control.segmented-dual .ant-segmented-item-selected {
+  background-color: #3b82f6 !important; /* blue-500 */
+}
+
+.type-segmented-control.segmented-dual .ant-segmented-item-selected .ant-segmented-item-label,
+.type-segmented-control.segmented-dual .ant-segmented-item-selected .ant-segmented-item-label * {
+  color: #ffffff !important;
+}
+
 .ant-segmented:not(.ant-segmented-block) {
   display: inline-flex !important;
 }
@@ -668,6 +755,19 @@ body:has(.ant-modal-wrap) .pro-terminal-content {
 .ant-modal-mask {
   touch-action: none !important;
   overscroll-behavior: contain !important;
+}
+
+/* Ant Design Table Pagination Native Size Changer Clean Styling */
+.ant-pagination-options-size-changer .ant-select-selection-search-input,
+.ant-pagination-options-size-changer .ant-select-selection-search {
+  display: none !important;
+}
+
+.ant-pagination-options-size-changer .ant-select-selector {
+  border-radius: 8px !important;
+  font-family: monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
 }
 
 

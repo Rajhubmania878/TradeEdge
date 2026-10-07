@@ -8,7 +8,7 @@ import {
 } from '@/shared/types';
 import { resolveTokenForExchange } from '@/data/universeManager';
 import { evaluateStrategyPayoff } from '@/engine/payoffEngine';
-import { Table, Tag, Tooltip, Empty, Typography, Space } from 'antd';
+import { Table, Tag, Tooltip, Empty, Typography, Space, Segmented } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   RiseOutlined,
@@ -50,6 +50,9 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
   onSelectStrategy,
   exchange = 'NSE'
 }) => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(15);
+
   const actualStep = stock.strikeStep;
 
   // Find ATM strike index
@@ -445,30 +448,36 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
 
   return (
     <div className="w-full flex flex-col font-sans bg-white dark:bg-slate-950 transition-colors">
-      {/* PROFESSIONAL FLUSH HEADER BAR (MATCHING RATIO MATRIX & OPTION CHAIN) */}
-      <div className="px-4 py-2.5 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 transition-colors">
-        <Space size={10} align="center" wrap>
-          <Tag color="cyan" className="font-sans font-bold text-xs px-2.5 py-0.5 m-0 rounded-md">
-            {stock.symbol}
-          </Tag>
+      {/* PROFESSIONAL FLUSH HEADER BAR WITH CORNER-ATTACHED BADGE */}
+      <div className="pl-0 pr-4 py-0 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 transition-colors min-h-[44px]">
+        <div className="flex items-stretch gap-3.5">
+          {/* ATTACHED CORNER TAB BADGE */}
           {optionType === 'CE' ? (
-            <Tag color="success" className="font-sans font-bold text-xs uppercase px-2.5 py-0.5 m-0 rounded-md">
-              CALLS (CE)
-            </Tag>
+            <div className="bg-emerald-600 dark:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm uppercase px-4 py-2.5 rounded-tl-xl rounded-br-xl shadow-md flex items-center gap-2 tracking-wider shrink-0 select-none">
+              <RiseOutlined className="text-base" />
+              <span>CALLS (CE)</span>
+            </div>
           ) : (
-            <Tag color="error" className="font-sans font-bold text-xs uppercase px-2.5 py-0.5 m-0 rounded-md">
-              PUTS (PE)
-            </Tag>
+            <div className="bg-rose-600 dark:bg-rose-500 text-white font-extrabold text-xs sm:text-sm uppercase px-4 py-2.5 rounded-tl-xl rounded-br-xl shadow-md flex items-center gap-2 tracking-wider shrink-0 select-none">
+              <FallOutlined className="text-base" />
+              <span>PUTS (PE)</span>
+            </div>
           )}
-          <Typography.Text strong className="font-sans text-sm tracking-tight text-slate-900 dark:text-white">
-            All Ratios Strategy Comparative Matrix
-          </Typography.Text>
-          <Tag className="font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 m-0">
-            Expiry: {expiry}
-          </Tag>
-        </Space>
 
-        <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+          <div className="flex items-center gap-2.5 flex-wrap py-2">
+            <Tag color="cyan" className="font-sans font-bold text-xs px-2.5 py-0.5 m-0 rounded-md border-0">
+              {stock.symbol}
+            </Tag>
+            <Typography.Text strong className="font-sans text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
+              All Ratios Strategy Comparative Matrix
+            </Typography.Text>
+            <Tag className="font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 m-0 rounded-md">
+              Expiry: {expiry}
+            </Tag>
+          </div>
+        </div>
+
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-mono py-2">
           Showing <strong className="text-slate-900 dark:text-white">{generatedRows.length}</strong> comparative structures
         </span>
       </div>
@@ -480,11 +489,24 @@ export const AllRatiosScanner: React.FC<AllRatiosScannerProps> = ({
           columns={columns}
           rowKey="id"
           pagination={{
-            pageSize: 15,
+            current: currentPage,
+            pageSize: pageSize,
+            total: generatedRows.length,
             showSizeChanger: true,
             pageSizeOptions: ['15', '30', '50', '84'],
             size: 'small',
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} structures`,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              if (size) setPageSize(size);
+            },
+            onShowSizeChange: (_current, size) => {
+              setCurrentPage(1);
+              setPageSize(size);
+            },
+            locale: {
+              items_per_page: '/ page'
+            },
             className: '!px-4 !py-2.5 !m-0 !border-t !border-slate-200 dark:!border-slate-800'
           }}
           scroll={{ x: 1050 }}
