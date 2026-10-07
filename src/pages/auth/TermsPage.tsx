@@ -7,7 +7,7 @@ interface LegalPageProps {
 
 export const TermsPage: React.FC<LegalPageProps> = ({ onNavigateHome }) => {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans p-6 selection:bg-emerald-500/30 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans p-6 selection:bg-blue-500/30 transition-colors">
       <div className="max-w-3xl mx-auto w-full space-y-6">
         <button
           onClick={onNavigateHome}
@@ -51,7 +51,7 @@ export const TermsPage: React.FC<LegalPageProps> = ({ onNavigateHome }) => {
 
 export const PrivacyPage: React.FC<LegalPageProps> = ({ onNavigateHome }) => {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans p-6 selection:bg-emerald-500/30 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans p-6 selection:bg-blue-500/30 transition-colors">
       <div className="max-w-3xl mx-auto w-full space-y-6">
         <button
           onClick={onNavigateHome}

@@ -35,6 +35,7 @@ import {
   ThunderboltOutlined,
   CodeOutlined
 } from '@ant-design/icons';
+import { TradeEdgeLogo } from '@/shared/components/branding/TradeEdgeLogo';
 import { useTheme } from '@/store/ThemeContext';
 
 export type MainTabType = 'MATRIX' | 'SCANNER' | 'OPTION_CHAIN' | 'ALL_RATIOS';
@@ -202,13 +203,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         {/* Zone 1: Logo & Primary Navigation Tabs */}
         <Flex align="center" gap={16} className="shrink-0">
           <Space size={10} align="center">
-            <Badge status="processing" color="#2f54eb" />
             <a
               href="/"
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
+              <TradeEdgeLogo size={22} />
               <Typography.Text strong className="text-sm tracking-tight text-slate-900 dark:text-white font-mono uppercase">
-                RATIO SPREAD
+                TRADE EDGE
               </Typography.Text>
               <Tag color="geekblue" className="m-0 font-mono text-[11px] font-semibold px-1.5 py-0 border-0 uppercase">
                 PRO

@@ -9,6 +9,7 @@ import {
   ArrowRightOutlined
 } from '@ant-design/icons';
 import { AuthLayout } from '@/app/layouts';
+import { TradeEdgeLogo } from '@/shared/components/branding/TradeEdgeLogo';
 
 const { Title, Paragraph } = Typography;
 
@@ -73,24 +74,26 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <AuthLayout>
-      <div className="w-full max-w-md space-y-6">
-        {/* Header with shared vertical visual axis */}
-        <Flex vertical align="center" gap={4} className="text-center">
+    <AuthLayout onNavigateHome={onNavigateHome}>
+      <div className="w-full max-w-md">
+        {/* Header with spacious vertical axis */}
+        <div className="text-center mb-7 sm:mb-8">
           <button
             onClick={onNavigateHome}
-            className="inline-flex items-center gap-2 font-mono text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-1 cursor-pointer"
+            className="inline-flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-2.5 cursor-pointer bg-slate-100 dark:bg-slate-800/80 px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-700/60"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="font-semibold">Ratio Spread Terminal</span>
+            <TradeEdgeLogo size={14} />
+            <span className="font-semibold uppercase tracking-wider">TRADE EDGE TERMINAL</span>
           </button>
-          <Title level={2} className="!text-2xl !font-extrabold !text-slate-900 dark:!text-white !mb-0 !tracking-tight">
+          
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2.5 font-sans">
             Log In To Your Account
-          </Title>
-          <Paragraph className="!text-xs !text-slate-500 dark:!text-slate-400 !mb-0 max-w-sm">
+          </h1>
+          
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed font-sans">
             Enter your credentials to access the institutional options ratio spread terminal.
-          </Paragraph>
-        </Flex>
+          </p>
+        </div>
 
         {/* Form Card */}
         <Card className="!bg-white dark:!bg-slate-900 !border-slate-200 dark:!border-slate-800 !rounded-2xl !shadow-xl">
@@ -121,53 +124,55 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             onFinish={handleFinish}
             autoComplete="off"
           >
-            <Form.Item
-              label={
-                <span className="text-xs font-mono font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-                  Email Address
-                </span>
-              }
-              name="email"
-              rules={[
-                { required: true, message: 'Please input your email address' },
-                { type: 'email', message: 'Please enter a valid email address' }
-              ]}
-              className="!mb-4"
-            >
-              <Input
-                prefix={<MailOutlined className="text-slate-400 mr-1" />}
-                placeholder="name@example.com"
-                className="font-mono"
-                size="large"
-              />
-            </Form.Item>
+            {/* Email Field */}
+            <div className="space-y-1.5 mb-4">
+              <label htmlFor="email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono uppercase tracking-wider">
+                Email Address
+              </label>
+              <Form.Item
+                name="email"
+                rules={[
+                  { required: true, message: 'Please input your email address' },
+                  { type: 'email', message: 'Please enter a valid email address' }
+                ]}
+                className="!mb-0"
+              >
+                <Input
+                  id="email"
+                  prefix={<MailOutlined className="text-slate-400 mr-2 text-sm" />}
+                  placeholder="name@example.com"
+                  className="font-sans text-sm rounded-xl h-11"
+                />
+              </Form.Item>
+            </div>
 
-            <Form.Item
-              label={
-                <Flex justify="space-between" align="center" className="w-full">
-                  <span className="text-xs font-mono font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-                    Password
-                  </span>
-                  <button
-                    type="button"
-                    onClick={onNavigateForgotPassword}
-                    className="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
-                  >
-                    Forgot password?
-                  </button>
-                </Flex>
-              }
-              name="password"
-              rules={[{ required: true, message: 'Please input your password' }]}
-              className="!mb-6"
-            >
-              <Input.Password
-                prefix={<LockOutlined className="text-slate-400 mr-1" />}
-                placeholder="••••••••"
-                className="font-mono"
-                size="large"
-              />
-            </Form.Item>
+            {/* Password Field with Decoupled Header */}
+            <div className="space-y-1.5 mb-6">
+              <div className="flex items-center justify-between w-full">
+                <label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono uppercase tracking-wider">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={onNavigateForgotPassword}
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer transition-colors"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              <Form.Item
+                name="password"
+                rules={[{ required: true, message: 'Please input your password' }]}
+                className="!mb-0"
+              >
+                <Input.Password
+                  id="password"
+                  prefix={<LockOutlined className="text-slate-400 mr-2 text-sm" />}
+                  placeholder="••••••••"
+                  className="font-sans text-sm rounded-xl h-11"
+                />
+              </Form.Item>
+            </div>
 
             <Button
               type="primary"
@@ -177,49 +182,49 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               iconPlacement="end"
               block
               size="large"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold font-mono tracking-wider h-11 border-0"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold font-sans tracking-wide h-11 rounded-xl border-0 shadow-xs text-sm"
             >
-              LOG IN TO TERMINAL
+              Log In To Terminal
             </Button>
           </Form>
 
           {/* Quick Demo Accounts */}
-          <Divider className="!border-slate-200 dark:!border-slate-800 !text-slate-400 !text-[10px] !font-mono !uppercase !my-4">
-            QUICK DEMO ACCESSIBLE ACCOUNTS
+          <Divider className="!border-slate-200 dark:!border-slate-800 !text-slate-400 !text-[11px] !font-sans !font-semibold !uppercase !my-5">
+            Quick Demo Accounts
           </Divider>
 
           <div className="grid grid-cols-3 gap-2">
             <Button
-              size="small"
+              size="middle"
               onClick={() => handleDemoLogin('admin@ratiospread.com', 'Admin123!')}
-              className="font-mono text-[11px] font-medium"
+              className="font-sans text-xs font-semibold rounded-xl"
             >
               Admin User
             </Button>
             <Button
-              size="small"
+              size="middle"
               onClick={() => handleDemoLogin('pro@ratiospread.com', 'Pro123!')}
-              className="font-mono text-[11px] font-medium"
+              className="font-sans text-xs font-semibold rounded-xl"
             >
               Pro User
             </Button>
             <Button
-              size="small"
+              size="middle"
               onClick={() => handleDemoLogin('demo@ratiospread.com', 'User123!')}
-              className="font-mono text-[11px] font-medium"
+              className="font-sans text-xs font-semibold rounded-xl"
             >
               Free User
             </Button>
           </div>
-        </Card>
 
-        {/* Signup Link */}
-        <Flex justify="center" align="center" gap={4} className="font-mono text-xs text-slate-600 dark:text-slate-400">
-          <span>Don't have an account?</span>
-          <button onClick={onNavigateSignup} className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer">
-            Create account
-          </button>
-        </Flex>
+          {/* Signup Link inside Card */}
+          <div className="flex justify-center items-center gap-1.5 font-sans text-xs text-slate-600 dark:text-slate-400 pt-5 mt-4 border-t border-slate-100 dark:border-slate-800">
+            <span>Don't have an account?</span>
+            <button onClick={onNavigateSignup} className="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer">
+              Create account
+            </button>
+          </div>
+        </Card>
       </div>
     </AuthLayout>
   );

@@ -4,9 +4,13 @@ import {
   SafetyCertificateOutlined,
   ThunderboltOutlined,
   LineChartOutlined,
-  TableOutlined
+  TableOutlined,
+  SunOutlined,
+  MoonOutlined
 } from '@ant-design/icons';
-import { Tag } from 'antd';
+import { Tag, Button, Tooltip } from 'antd';
+import { TradeEdgeLogo } from '@/shared/components/branding/TradeEdgeLogo';
+import { useTheme } from '@/store/ThemeContext';
 
 interface LandingPageProps {
   onNavigateLogin: () => void;
@@ -21,37 +25,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onNavigateTerms,
   onNavigatePrivacy
 }) => {
+  const { isDark, toggleTheme } = useTheme();
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 transition-colors">
       {/* Top Header */}
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-30 px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-2 transition-colors">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50 shrink-0" />
+      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-2 transition-colors">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <TradeEdgeLogo size={22} />
           <span className="font-extrabold text-xs sm:text-base tracking-tight text-slate-900 dark:text-white font-mono truncate">
-            RATIO SPREAD TERMINAL
+            TRADE EDGE TERMINAL
           </span>
+          <Tag color="geekblue" className="m-0 font-mono text-[10px] font-semibold px-1.5 py-0 border-0 uppercase hidden sm:inline-block">
+            PRO
+          </Tag>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 font-mono text-xs shrink-0">
-          <button
-            onClick={onNavigateLogin}
-            className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-semibold"
-          >
-            Log In
-          </button>
+          <Tooltip title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+            <Button
+              size="middle"
+              icon={isDark ? <SunOutlined className="text-amber-400" /> : <MoonOutlined className="text-slate-600 dark:text-slate-300" />}
+              onClick={toggleTheme}
+              className="flex items-center justify-center font-medium border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-xl cursor-pointer"
+            />
+          </Tooltip>
+
           <button
             onClick={onNavigateSignup}
-            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-emerald-600 dark:bg-emerald-500 text-white dark:text-slate-950 font-bold hover:bg-emerald-500 dark:hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20"
+            className="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-md shadow-blue-500/20 cursor-pointer"
           >
-            Create Account
+            Get Started
           </button>
         </div>
       </header>
 
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-8 sm:pb-12 text-center space-y-4 sm:space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-semibold">
-          <ThunderboltOutlined className="text-sm shrink-0" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-mono font-semibold">
+          <ThunderboltOutlined className="text-sm shrink-0 text-blue-500" />
           <span>NSE & BSE Real-Time Derivatives Analytics</span>
         </div>
 
@@ -66,7 +78,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-3 sm:pt-4 font-mono text-sm max-w-md sm:max-w-none mx-auto">
           <button
             onClick={onNavigateSignup}
-            className="px-6 py-3.5 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white dark:text-slate-950 font-extrabold hover:bg-emerald-500 dark:hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/25"
+            className="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-500/25 cursor-pointer"
           >
             <span>Launch Live Terminal</span>
             <ArrowRightOutlined className="text-sm" />
@@ -74,7 +86,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           <button
             onClick={onNavigateLogin}
-            className="px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs flex items-center justify-center"
+            className="px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs flex items-center justify-center cursor-pointer"
           >
             Sign In To Existing Account
           </button>
@@ -82,9 +94,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* Features Grid */}
-      <section className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-200 dark:border-slate-900 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+      <section className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-200 dark:border-slate-800/80 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-slate-900/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs transition-colors hover:border-emerald-500/40">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <LineChartOutlined className="text-lg" />
           </div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Live SmartAPI Feed</h3>
@@ -93,8 +105,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+        <div className="bg-white dark:bg-slate-900/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs transition-colors hover:border-blue-500/40">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
             <TableOutlined className="text-lg" />
           </div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Ratio Spread Matrix</h3>
@@ -103,8 +115,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+        <div className="bg-white dark:bg-slate-900/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs transition-colors hover:border-amber-500/40">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
             <SafetyCertificateOutlined className="text-lg" />
           </div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Role-Based Security</h3>
@@ -116,15 +128,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
       {/* Terminal Visual Preview Banner */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 sm:p-4 shadow-xl overflow-hidden font-mono text-xs text-slate-600 dark:text-slate-400 space-y-3 transition-colors">
+        <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 sm:p-4 shadow-xl overflow-hidden font-mono text-xs text-slate-600 dark:text-slate-400 space-y-3 transition-colors">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-800">
             <span className="text-slate-900 dark:text-slate-200 font-semibold text-[11px] sm:text-xs">TERMINAL DEMO PREVIEW · RELIANCE NSE</span>
-            <Tag color="success" className="font-mono text-[10px] sm:text-[11px] font-semibold m-0 border-0">
+            <Tag color="geekblue" className="font-mono text-[10px] sm:text-[11px] font-semibold m-0 border-0">
               ● LIVE MARKET FEED ACTIVE
             </Tag>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center py-2 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800/80">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center py-2.5 bg-slate-50 dark:bg-[#080c14] rounded-xl border border-slate-200 dark:border-slate-800/80">
             <div>
               <span className="text-[11px] text-slate-500 font-medium block">CASH</span>
               <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">₹1,498.20</span>
@@ -146,20 +158,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-200 dark:border-slate-900 py-6 sm:py-8 px-4 sm:px-6 text-xs text-slate-500 font-mono transition-colors">
+      <footer className="mt-auto border-t border-slate-200 dark:border-slate-800/80 py-6 sm:py-8 px-4 sm:px-6 text-xs text-slate-500 font-mono transition-colors">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div>
-            © 2026 Ratio Spread Terminal. All rights reserved.
+            © 2026 Trade Edge Terminal. All rights reserved.
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            <button onClick={onNavigateTerms} className="hover:text-slate-900 dark:hover:text-slate-300 transition-colors">
+            <button onClick={onNavigateTerms} className="hover:text-slate-900 dark:hover:text-slate-300 transition-colors cursor-pointer">
               Terms of Service
             </button>
-            <button onClick={onNavigatePrivacy} className="hover:text-slate-900 dark:hover:text-slate-300 transition-colors">
+            <button onClick={onNavigatePrivacy} className="hover:text-slate-900 dark:hover:text-slate-300 transition-colors cursor-pointer">
               Privacy Policy
             </button>
-            <button onClick={onNavigateLogin} className="hover:text-slate-900 dark:hover:text-slate-300 transition-colors">
+            <button onClick={onNavigateLogin} className="hover:text-slate-900 dark:hover:text-slate-300 transition-colors cursor-pointer">
               Login
             </button>
           </div>

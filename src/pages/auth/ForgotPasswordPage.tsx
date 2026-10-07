@@ -3,6 +3,7 @@ import { authService } from '@/services/authService';
 import { Form, Input, Button, Alert, Card, Flex, Typography } from 'antd';
 import { MailOutlined, ArrowLeftOutlined, CheckCircleOutlined, SendOutlined } from '@ant-design/icons';
 import { AuthLayout } from '@/app/layouts';
+import { TradeEdgeLogo } from '@/shared/components/branding/TradeEdgeLogo';
 
 const { Title, Paragraph } = Typography;
 
@@ -35,23 +36,26 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({
   };
 
   return (
-    <AuthLayout>
-      <div className="w-full max-w-md space-y-6">
-        <Flex vertical align="center" gap={4} className="text-center">
+    <AuthLayout onNavigateHome={onNavigateHome}>
+      <div className="w-full max-w-md">
+        {/* Header with spacious vertical axis */}
+        <div className="text-center mb-7 sm:mb-8">
           <button
             onClick={onNavigateHome}
-            className="inline-flex items-center gap-2 font-mono text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-1 cursor-pointer"
+            className="inline-flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-2.5 cursor-pointer bg-slate-100 dark:bg-slate-800/80 px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-700/60"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="font-semibold">Ratio Spread Terminal</span>
+            <TradeEdgeLogo size={14} />
+            <span className="font-semibold uppercase tracking-wider">TRADE EDGE TERMINAL</span>
           </button>
-          <Title level={2} className="!text-2xl !font-extrabold !text-slate-900 dark:!text-white !mb-0 !tracking-tight">
+          
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2.5 font-sans">
             Reset Password
-          </Title>
-          <Paragraph className="!text-xs !text-slate-500 dark:!text-slate-400 !mb-0 max-w-sm">
+          </h1>
+          
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed font-sans">
             Enter your email to receive password reset instructions.
-          </Paragraph>
-        </Flex>
+          </p>
+        </div>
 
         <Card className="!bg-white dark:!bg-slate-900 !border-slate-200 dark:!border-slate-800 !rounded-2xl !shadow-xl">
           {error && (
@@ -89,26 +93,26 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({
               onFinish={handleFinish}
               autoComplete="off"
             >
-              <Form.Item
-                label={
-                  <span className="text-xs font-mono font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-                    Email Address
-                  </span>
-                }
-                name="email"
-                rules={[
-                  { required: true, message: 'Please input your email address' },
-                  { type: 'email', message: 'Please enter a valid email address' }
-                ]}
-                className="!mb-6"
-              >
-                <Input
-                  prefix={<MailOutlined className="text-slate-400 mr-1" />}
-                  placeholder="name@example.com"
-                  className="font-mono"
-                  size="large"
-                />
-              </Form.Item>
+              <div className="space-y-1.5 mb-6">
+                <label htmlFor="email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono uppercase tracking-wider">
+                  Email Address
+                </label>
+                <Form.Item
+                  name="email"
+                  rules={[
+                    { required: true, message: 'Please input your email address' },
+                    { type: 'email', message: 'Please enter a valid email address' }
+                  ]}
+                  className="!mb-0"
+                >
+                  <Input
+                    id="email"
+                    prefix={<MailOutlined className="text-slate-400 mr-2 text-sm" />}
+                    placeholder="name@example.com"
+                    className="font-sans text-sm rounded-xl h-11"
+                  />
+                </Form.Item>
+              </div>
 
               <Button
                 type="primary"
@@ -118,23 +122,24 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({
                 iconPlacement="end"
                 block
                 size="large"
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold font-mono tracking-wider h-11 border-0"
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold font-sans tracking-wide h-11 rounded-xl border-0 shadow-xs text-sm"
               >
-                SEND RESET INSTRUCTIONS
+                Send Reset Instructions
               </Button>
             </Form>
           )}
-        </Card>
 
-        <Flex justify="center" align="center" gap={4} className="font-mono text-xs">
-          <button
-            onClick={onNavigateLogin}
-            className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer font-semibold"
-          >
-            <ArrowLeftOutlined className="text-[10px]" />
-            <span>Back to login</span>
-          </button>
-        </Flex>
+          {/* Back to Login Link inside Card */}
+          <div className="flex justify-center items-center font-sans text-xs pt-5 mt-4 border-t border-slate-100 dark:border-slate-800">
+            <button
+              onClick={onNavigateLogin}
+              className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline transition-colors cursor-pointer font-semibold"
+            >
+              <ArrowLeftOutlined className="text-[10px]" />
+              <span>Back to login</span>
+            </button>
+          </div>
+        </Card>
       </div>
     </AuthLayout>
   );
