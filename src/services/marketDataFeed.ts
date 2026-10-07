@@ -110,23 +110,17 @@ class MarketDataFeedService {
     }
   }
 
-  private handleSessionExpired(reason: string = 'Session expired'): void {
-    if (this.sessionExpired) return;
-    this.sessionExpired = true;
-    console.warn(`[MarketDataFeed] Session expired: ${reason}. Stopping polling and redirecting to login screen.`);
-    this.stopAllPolling();
-
-    try {
-      sessionStorage.setItem('ratio_spread_session_expired', 'Your trading session has expired. Please log in again to continue.');
-    } catch {
-      // ignore
+  private handleBrokerSessionExpired(reason: string = 'Broker connection unauthenticated'): void {
+    console.warn(`[MarketDataFeed] SmartAPI broker feed notice: ${reason}. Falling back to simulation stream.`);
+    this.isSimulated = true;
+    if (this.apiPollTimer) {
+      clearInterval(this.apiPollTimer);
+      this.apiPollTimer = null;
     }
-
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('session-expired', {
-        detail: { reason, message: 'Your trading session has expired. Please log in again to continue.' }
-      }));
+    if (!this.simulationTimer) {
+      this.startSimulationStream();
     }
+    this.notifyMetrics();
   }
 
   /**
@@ -135,7 +129,6 @@ class MarketDataFeedService {
    */
   private startConnectionSupervisor() {
     const checkConnection = async () => {
-      if (this.sessionExpired) return;
       if (this.tickCallbacks.size === 0 && this.metricsCallbacks.size === 0) return;
       try {
         const res = await fetch('/api/angel/status');
@@ -176,6 +169,7 @@ class MarketDataFeedService {
             if (!this.simulationTimer) {
               this.startSimulationStream();
             }
+            this.notifyMetrics();
             return;
           }
         }
@@ -284,7 +278,7 @@ class MarketDataFeedService {
       });
 
       if (res.status === 401 || res.status === 403) {
-        this.handleSessionExpired('Quote API returned unauthorized status');
+        this.handleBrokerSessionExpired('Quote API returned unauthorized status');
         return;
       }
 
@@ -323,7 +317,7 @@ class MarketDataFeedService {
         }
 
         if (json?.sessionExpired) {
-          this.handleSessionExpired('Broker session expired flag received in quote response');
+          this.handleBrokerSessionExpired('Broker session expired flag received in quote response');
           return;
         }
 

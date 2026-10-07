@@ -322,7 +322,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       children: (
         <div className="space-y-3 pt-1">
           {error && (
-            <Alert message={error} type="error" showIcon className="font-sans text-xs rounded-xl mb-3" />
+            <Alert title={error} type="error" showIcon className="font-sans text-xs rounded-xl mb-3" />
           )}
 
           {/* Filter Controls Bar */}

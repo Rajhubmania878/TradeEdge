@@ -119,9 +119,9 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3.5 sm:p-5 md:p-7 mb-5 space-y-4 sm:space-y-6 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 flex flex-col gap-4 sm:gap-5 mb-4 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
       {/* Top Row: Asset Context & Quick Watchlist */}
-      <Flex justify="space-between" align="center" wrap="wrap" gap={14}>
+      <div className="flex justify-between items-center flex-wrap gap-3.5 w-full">
         {/* Prominent Searchable Stock Selector */}
         <Space size={10} align="center" wrap>
           <StockSelectorDropdown
@@ -180,7 +180,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
             />
           </Space>
         </Space>
-      </Flex>
+      </div>
 
       {/* Main Parameters Row: CE/PE, Ratio, Gap Mode, Strike Steps, Range */}
       <ProCard ghost gutter={[12, 12]} wrap className="pt-2 border-t border-slate-200/80 dark:border-slate-800 text-xs">

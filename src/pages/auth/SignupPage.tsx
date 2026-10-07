@@ -76,7 +76,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({
         <Card className="!bg-white dark:!bg-slate-900 !border-slate-200 dark:!border-slate-800 !rounded-2xl !shadow-xl">
           {error && (
             <Alert
-              message={error}
+              title={error}
               type="error"
               showIcon
               className="font-mono text-xs mb-4"

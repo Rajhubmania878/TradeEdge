@@ -96,7 +96,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         <Card className="!bg-white dark:!bg-slate-900 !border-slate-200 dark:!border-slate-800 !rounded-2xl !shadow-xl">
           {sessionExpiredNotice && (
             <Alert
-              message="Session Expired"
+              title="Session Expired"
               description={sessionExpiredNotice}
               type="warning"
               showIcon
@@ -107,7 +107,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           {error && (
             <Alert
-              message={error}
+              title={error}
               type="error"
               showIcon
               className="font-mono text-xs mb-4"

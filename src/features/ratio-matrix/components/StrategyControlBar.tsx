@@ -177,9 +177,9 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 space-y-3 sm:space-y-3.5 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 flex flex-col gap-4 sm:gap-5 shadow-2xs font-sans text-slate-900 dark:text-slate-100">
       {/* 1. TOP ROW: RATIO QUICK BUTTONS & RESET/SAVE PRESET */}
-      <Flex align="center" justify="space-between" wrap="wrap" gap={10} className="w-full">
+      <div className="flex items-center justify-between flex-wrap gap-3 w-full">
         {/* Left: Ratio Buttons */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-sans shrink-0">
@@ -243,7 +243,7 @@ export const StrategyControlBar: React.FC<StrategyControlBarProps> = ({
             Save Preset
           </Button>
         </div>
-      </Flex>
+      </div>
 
       {/* 2. PARAMETER MATRIX (4 Clean Cards in a Single Row) */}
       <div className="flex flex-nowrap items-stretch gap-2 w-full overflow-x-auto pb-0.5">

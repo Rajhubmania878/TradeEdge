@@ -461,7 +461,7 @@ export const AngelOneModal: React.FC<AngelOneModalProps> = ({ isOpen, onClose, m
         {/* Test Connection Result Alert */}
         {testResult && (
           <Alert
-            message={testResult.message}
+            title={testResult.message}
             type={testResult.success ? 'success' : 'error'}
             showIcon
             closable

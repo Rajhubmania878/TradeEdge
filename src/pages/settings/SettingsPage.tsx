@@ -392,7 +392,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               >
                 {passwordMsg && (
                   <Alert
-                    message={passwordMsg}
+                    title={passwordMsg}
                     type="success"
                     showIcon
                     className="text-xs font-sans mb-4 rounded-xl"
@@ -401,7 +401,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
                 {passwordErr && (
                   <Alert
-                    message={passwordErr}
+                    title={passwordErr}
                     type="error"
                     showIcon
                     className="text-xs font-sans mb-4 rounded-xl"
